@@ -6,7 +6,7 @@ import { ScoreBoard } from './ScoreBoard'
 import { Feedback } from './Feedback'
 import { GuessForm } from './GuessForm'
 import { useGuess } from '@/hooks/useGuess'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type CardProps = {
   pokemon: Pokemon
@@ -31,6 +31,7 @@ export const Card = ({
     submitGuess,
   } = useGuess(pokemon, onCorrectGuess, onWrongGuess)
 
+  const [showName, setShowName] = useState(false)
   const hasInteractedRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -38,9 +39,26 @@ export const Card = ({
     if (hasInteractedRef.current && !isInputDisabled) inputRef.current?.focus()
   }, [pokemon, isInputDisabled])
 
+  useEffect(() => {
+    setShowName(false)
+  }, [pokemon])
+
   const handleGuess = () => {
     hasInteractedRef.current = true
     submitGuess()
+    setShowName(true)
+    
+    if (isCorrect) {
+      setTimeout(() => {
+        setShowName(false)
+        onCorrectGuess()
+      }, 1000)
+    } else {
+      setTimeout(() => {
+        setShowName(false)
+        onWrongGuess()
+      }, 1000)
+    }
   }
 
   return (
@@ -63,7 +81,7 @@ export const Card = ({
       <div className='h-[32px] flex flex-col items-center justify-center'>
         <Feedback
           status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
-          name={pokemon.name}
+          name={showName ? pokemon.name : ''}
         />
       </div>
 
