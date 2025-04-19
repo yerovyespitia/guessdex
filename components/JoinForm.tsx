@@ -1,43 +1,48 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSocket } from '@/hooks/useSocket'
+import { useSocket } from '@/contexts/SocketContext'
+import { useState } from 'react'
 
 type JoinFormProps = {
   disabled?: boolean
 }
 
 export const JoinForm = ({ disabled }: JoinFormProps) => {
-  const [code, setCode] = useState('')
-  const [showPlaceholder, setShowPlaceholder] = useState(true)
   const router = useRouter()
-  const socket = useSocket()
+  const { socket, isConnected } = useSocket()
+  const [roomCode, setRoomCode] = useState('')
+  const [showPlaceholder, setShowPlaceholder] = useState(true)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (code.trim() && socket) {
-      console.log('Joining room:', code)
-      router.push(`/room/${code}`)
-      setCode('')
+    if (!roomCode || disabled || !socket || !isConnected) {
+      console.log('Cannot join room:', { roomCode, disabled, socketAvailable: !!socket, isConnected })
+      return
     }
+    console.log('Joining room:', roomCode)
+    router.push(`/room/${roomCode}`)
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='flex justify-center items-center'
-    >
+    <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full max-w-md'>
       <input
         type='text'
-        className='px-6 py-3 w-96 border text-center border-white rounded-lg text-white outline-none bg-transparent disabled:opacity-50 disabled:cursor-not-allowed'
-        placeholder={showPlaceholder ? 'Enter Room Code' : ''}
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
+        value={roomCode}
+        onChange={(e) => setRoomCode(e.target.value)}
         onFocus={() => setShowPlaceholder(false)}
         onBlur={() => setShowPlaceholder(true)}
-        disabled={disabled}
+        placeholder={showPlaceholder ? 'Enter Room Code' : ''}
+        className='px-4 py-2 rounded-lg bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20'
+        disabled={disabled || !isConnected}
       />
+      <button
+        type='submit'
+        className='px-6 py-3 bg-white text-purple-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+        disabled={disabled || !isConnected || !roomCode}
+      >
+        {isConnected ? 'Join Room' : 'Connecting...'}
+      </button>
     </form>
   )
 }
