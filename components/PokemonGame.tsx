@@ -27,7 +27,9 @@ export const PokemonGame = ({ initialPokemon }: PokemonGameProps) => {
         pokemon={pokemon}
         onCorrectGuess={() => startCountdown()}
         onWrongGuess={() => startCountdown()}
+        isInputDisabled={countdown !== null}
       />
+
       <Countdown value={countdown} />
     </div>
   )
