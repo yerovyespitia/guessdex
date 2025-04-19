@@ -51,10 +51,18 @@ io.on('connection', (socket) => {
     room.scores[socket.id] = 0
     socket.join(roomId)
 
+    // Send initial game state to the joining player
+    socket.emit('game_state', {
+      players: room.players,
+      scores: room.scores,
+      currentPokemon: room.currentPokemon
+    })
+
     // Notify all players in the room
     io.to(roomId).emit('player_joined', {
       playerId: socket.id,
       scores: room.scores,
+      players: room.players
     })
   })
 
