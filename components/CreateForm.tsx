@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useSocket } from '@/hooks/useSocket'
+import { useSocket } from '@/contexts/SocketContext'
 import { useEffect } from 'react'
 
 type CreateFormProps = {
@@ -10,7 +10,7 @@ type CreateFormProps = {
 
 export const CreateForm = ({ disabled }: CreateFormProps) => {
   const router = useRouter()
-  const socket = useSocket()
+  const { socket, isConnected } = useSocket()
 
   useEffect(() => {
     if (!socket) {
@@ -31,8 +31,8 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
   }, [socket, router])
 
   const handleCreateRoom = () => {
-    if (disabled || !socket) {
-      console.log('Cannot create room:', { disabled, socketAvailable: !!socket })
+    if (disabled || !socket || !isConnected) {
+      console.log('Cannot create room:', { disabled, socketAvailable: !!socket, isConnected })
       return
     }
     console.log('Emitting create_room event')
@@ -43,9 +43,9 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
     <button
       onClick={handleCreateRoom}
       className='px-6 py-3 bg-white text-purple-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-      disabled={disabled}
+      disabled={disabled || !isConnected}
     >
-      Create New Room
+      {isConnected ? 'Create New Room' : 'Connecting...'}
     </button>
   )
 }
