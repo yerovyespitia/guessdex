@@ -6,14 +6,21 @@ import { ScoreBoard } from './ScoreBoard'
 import { Feedback } from './Feedback'
 import { GuessForm } from './GuessForm'
 import { useGuess } from '@/hooks/useGuess'
+import { useEffect, useRef } from 'react'
 
 type CardProps = {
   pokemon: Pokemon
   onCorrectGuess: () => void
   onWrongGuess: () => void
+  isInputDisabled?: boolean
 }
 
-export const Card = ({ pokemon, onCorrectGuess, onWrongGuess }: CardProps) => {
+export const Card = ({
+  pokemon,
+  onCorrectGuess,
+  onWrongGuess,
+  isInputDisabled = false,
+}: CardProps) => {
   const {
     guess,
     setGuess,
@@ -23,6 +30,18 @@ export const Card = ({ pokemon, onCorrectGuess, onWrongGuess }: CardProps) => {
     wrongGuesses,
     submitGuess,
   } = useGuess(pokemon, onCorrectGuess, onWrongGuess)
+
+  const hasInteractedRef = useRef(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (hasInteractedRef.current && !isInputDisabled) inputRef.current?.focus()
+  }, [pokemon, isInputDisabled])
+
+  const handleGuess = () => {
+    hasInteractedRef.current = true
+    submitGuess()
+  }
 
   return (
     <div className='flex flex-col gap-5'>
@@ -50,9 +69,11 @@ export const Card = ({ pokemon, onCorrectGuess, onWrongGuess }: CardProps) => {
 
       <div className='flex items-center justify-center gap-2 w-full'>
         <GuessForm
+          ref={inputRef}
           value={guess}
           onChange={setGuess}
-          onSubmit={submitGuess}
+          onSubmit={handleGuess}
+          disabled={isInputDisabled}
         />
       </div>
     </div>
