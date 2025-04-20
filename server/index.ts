@@ -41,11 +41,11 @@ io.on('connection', (socket) => {
     socket.join(roomId)
     socket.emit('room_created', { roomId })
     
-    // Send initial game state to the room creator
+    // Send initial game state to the room creator without the Pokemon
     socket.emit('game_state', {
       players: [socket.id],
       scores: { [socket.id]: 0 },
-      currentPokemon: pokemon,
+      currentPokemon: null, // Don't send Pokemon to the room creator yet
       activePlayerId: socket.id
     })
   })
@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
       socket.emit('game_state', {
         players: room.players,
         scores: room.scores,
-        currentPokemon: room.currentPokemon,
+        currentPokemon: room.activePlayerId === socket.id ? room.currentPokemon : null, // Only send Pokemon to the active player
         activePlayerId: room.activePlayerId
       })
       return
@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
     socket.emit('game_state', {
       players: room.players,
       scores: room.scores,
-      currentPokemon: room.currentPokemon,
+      currentPokemon: room.activePlayerId === socket.id ? room.currentPokemon : null, // Only send Pokemon to the active player
       activePlayerId: room.activePlayerId
     })
 
@@ -95,6 +95,17 @@ io.on('connection', (socket) => {
       players: room.players,
       activePlayerId: room.activePlayerId
     })
+    
+    // If this is the second player joining, start the game by sending the Pokemon to the active player
+    if (room.players.length === 2) {
+      // Send the Pokemon to the active player
+      io.to(room.activePlayerId).emit('game_state', {
+        players: room.players,
+        scores: room.scores,
+        currentPokemon: room.currentPokemon,
+        activePlayerId: room.activePlayerId
+      })
+    }
   })
 
   // Handle leaving rooms
@@ -111,6 +122,14 @@ io.on('connection', (socket) => {
         // If the active player leaves, assign the turn to another player
         if (room.activePlayerId === socket.id && room.players.length > 0) {
           room.activePlayerId = room.players[0]
+          
+          // Notify the new active player that it's their turn
+          io.to(room.activePlayerId).emit('game_state', {
+            players: room.players,
+            scores: room.scores,
+            currentPokemon: room.currentPokemon,
+            activePlayerId: room.activePlayerId
+          })
         }
         
         console.log(`Player ${socket.id} left room ${roomId}. Remaining players: ${room.players.join(', ')}`)
@@ -143,12 +162,18 @@ io.on('connection', (socket) => {
       return
     }
 
-    const isCorrect =
-      guess.toLowerCase() === room.currentPokemon.name.toLowerCase()
+    console.log(`Player ${socket.id} submitted guess: ${guess}`)
+    console.log(`Current Pokemon: ${room.currentPokemon.name}`)
+
+    const isCorrect = guess.toLowerCase() === room.currentPokemon.name.toLowerCase()
+    console.log(`Guess is ${isCorrect ? 'correct' : 'incorrect'}`)
 
     if (isCorrect) {
+      // Update player's score
       room.scores[socket.id]++
       room.guessedPlayers.push(socket.id)
+      
+      console.log(`Player ${socket.id} guessed correctly. Guessed players: ${room.guessedPlayers.join(', ')}`)
       
       // Check if all players have guessed
       if (room.guessedPlayers.length === room.players.length) {
@@ -164,18 +189,79 @@ io.on('connection', (socket) => {
         
         console.log(`All players have guessed. New active player: ${room.activePlayerId}`)
         
-        // Notify all players
+        // Notify all players about the round completion
         io.to(roomId).emit('round_complete', {
           scores: room.scores,
           newPokemon,
           activePlayerId: room.activePlayerId
         })
+        
+        // Send the Pokemon only to the new active player
+        io.to(room.activePlayerId).emit('game_state', {
+          players: room.players,
+          scores: room.scores,
+          currentPokemon: newPokemon,
+          activePlayerId: room.activePlayerId
+        })
       } else {
-        // Not all players have guessed yet, just update the scores
+        // Not all players have guessed yet
+        // Find the next player who hasn't guessed
+        const currentIndex = room.players.indexOf(room.activePlayerId)
+        let nextIndex = (currentIndex + 1) % room.players.length
+        let attempts = 0
+        
+        // Keep looking for the next player who hasn't guessed, with a maximum of room.players.length attempts
+        while (room.guessedPlayers.includes(room.players[nextIndex]) && attempts < room.players.length) {
+          nextIndex = (nextIndex + 1) % room.players.length
+          attempts++
+        }
+        
+        // If we couldn't find a player who hasn't guessed, something went wrong
+        if (attempts >= room.players.length) {
+          console.error('Could not find next player who hasn\'t guessed')
+          return
+        }
+        
+        room.activePlayerId = room.players[nextIndex]
+        console.log(`New active player: ${room.activePlayerId}`)
+        
+        // Notify all players about the correct guess
         io.to(roomId).emit('correct_guess', {
           playerId: socket.id,
           scores: room.scores,
-          guessedPlayers: room.guessedPlayers
+          guessedPlayers: room.guessedPlayers,
+          activePlayerId: room.activePlayerId
+        })
+        
+        // Send the Pokemon only to the new active player
+        io.to(room.activePlayerId).emit('game_state', {
+          players: room.players,
+          scores: room.scores,
+          currentPokemon: room.currentPokemon,
+          activePlayerId: room.activePlayerId
+        })
+        
+        // Send a game_state update to the player who just guessed correctly
+        io.to(socket.id).emit('game_state', {
+          players: room.players,
+          scores: room.scores,
+          currentPokemon: null,
+          activePlayerId: room.activePlayerId
+        })
+        
+        // Disable guessing for the player who just guessed correctly
+        socket.emit('disable_guess')
+        
+        // Send a game_state update to all other players
+        room.players.forEach(playerId => {
+          if (playerId !== room.activePlayerId && playerId !== socket.id) {
+            io.to(playerId).emit('game_state', {
+              players: room.players,
+              scores: room.scores,
+              currentPokemon: null,
+              activePlayerId: room.activePlayerId
+            })
+          }
         })
       }
     } else {
