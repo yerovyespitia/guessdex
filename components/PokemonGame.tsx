@@ -5,8 +5,9 @@ import { Card } from './Card'
 import { Pokemon } from '@/types/pokemon'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Countdown } from './Countdown'
-import { useGameTimer } from '@/hooks/useGameTimer'
+// import { useGameTimer } from '@/hooks/useGameTimer'
 import { useQueryClient } from '@tanstack/react-query'
+import { useSocket } from '@/contexts/SocketContext'
 
 type PokemonGameProps = {
   initialPokemon: Pokemon
@@ -29,31 +30,62 @@ export const PokemonGame = ({
 }: PokemonGameProps) => {
   const [pokemon, setPokemon] = useState<Pokemon>(initialPokemon)
   const [isMyTurn, setIsMyTurn] = useState(false)
+  const [isGuessDisabled, setIsGuessDisabled] = useState(false)
   const queryClient = useQueryClient()
+  const { socket } = useSocket()
 
-  const { timeLeft, startTimer, stopTimer } = useGameTimer(15, () => {
-    if (isMultiplayer && onSubmitGuess) {
-      onSubmitGuess('')
-    }
-  })
+  // const { timeLeft, startTimer, stopTimer } = useGameTimer(15, () => {
+  //   if (isMultiplayer && onSubmitGuess) {
+  //     onSubmitGuess('')
+  //   }
+  // })
 
   useEffect(() => {
     setPokemon(initialPokemon)
+    setIsGuessDisabled(false)
   }, [initialPokemon])
 
   useEffect(() => {
     if (isMultiplayer && activePlayerId) {
       const isActive = activePlayerId === currentPlayerId
+      console.log(
+        `Player ${currentPlayerId} is ${isActive ? 'active' : 'not active'}`
+      )
       setIsMyTurn(isActive)
-      if (isActive) {
-        startTimer()
+
+      // Only start the timer if there are at least 2 players and it's the active player's turn
+      if (isActive && players.length >= 2) {
+        console.log('Starting timer for player:', currentPlayerId)
+        // startTimer()
       } else {
-        stopTimer()
+        console.log('Stopping timer for player:', currentPlayerId)
+        // stopTimer()
       }
     } else {
       setIsMyTurn(true)
     }
-  }, [isMultiplayer, activePlayerId, currentPlayerId, startTimer, stopTimer])
+  }, [isMultiplayer, activePlayerId, currentPlayerId, players.length])
+
+  // Add a new effect to handle the disable_guess event
+  useEffect(() => {
+    if (!socket) return
+
+    const handleDisableGuess = () => {
+      console.log('Guess disabled for player:', currentPlayerId)
+      setIsGuessDisabled(true)
+    }
+
+    socket.on('disable_guess', handleDisableGuess)
+
+    return () => {
+      socket.off('disable_guess', handleDisableGuess)
+    }
+  }, [socket, currentPlayerId])
+
+  // Add a new effect to reset isGuessDisabled when the Pokemon changes
+  useEffect(() => {
+    setIsGuessDisabled(false)
+  }, [pokemon])
 
   const loadNewPokemon = async () => {
     // Get the new data directly without invalidating the query first
@@ -79,8 +111,9 @@ export const PokemonGame = ({
 
   const handleCorrectGuess = () => {
     if (isMultiplayer && onSubmitGuess) {
-      stopTimer()
+      // stopTimer()
       onSubmitGuess(pokemon.name)
+      setIsGuessDisabled(true)
     } else {
       startCountdown()
     }
@@ -98,7 +131,9 @@ export const PokemonGame = ({
         pokemon={pokemon}
         onCorrectGuess={handleCorrectGuess}
         onWrongGuess={handleWrongGuess}
-        isInputDisabled={countdown !== null || (isMultiplayer && !isMyTurn)}
+        isInputDisabled={
+          countdown !== null || (isMultiplayer && !isMyTurn) || isGuessDisabled
+        }
         isMultiplayer={isMultiplayer}
         playerScores={playerScores}
         players={players}
@@ -113,11 +148,11 @@ export const PokemonGame = ({
         </div>
       )}
 
-      {isMultiplayer && isMyTurn && timeLeft !== null && (
+      {/* {isMultiplayer && isMyTurn && timeLeft !== null && (
         <div className='mt-4 text-xl font-semibold text-yellow-300'>
           Time left: {timeLeft}s
         </div>
-      )}
+      )} */}
 
       <Countdown value={countdown} />
     </div>
