@@ -56,9 +56,7 @@ export const PokemonGame = ({
   }, [isMultiplayer, activePlayerId, currentPlayerId, startTimer, stopTimer])
 
   const loadNewPokemon = async () => {
-    // Invalidate the query to force a refetch
-    await queryClient.invalidateQueries({ queryKey: ['pokemon'] })
-    // Get the new data
+    // Get the new data directly without invalidating the query first
     const newData = await queryClient.fetchQuery({
       queryKey: ['pokemon'],
       queryFn: async () => {
