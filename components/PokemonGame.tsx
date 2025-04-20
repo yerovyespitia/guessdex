@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Card } from './Card'
 import { Pokemon } from '@/types/pokemon'
-import { getPokemon } from '@/utils/get'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Countdown } from './Countdown'
 import { useGameTimer } from '@/hooks/useGameTimer'
+import { useQueryClient } from '@tanstack/react-query'
 
 type PokemonGameProps = {
   initialPokemon: Pokemon
@@ -25,10 +25,11 @@ export const PokemonGame = ({
   playerScores = {},
   players = [],
   currentPlayerId = '',
-  activePlayerId = ''
+  activePlayerId = '',
 }: PokemonGameProps) => {
   const [pokemon, setPokemon] = useState<Pokemon>(initialPokemon)
   const [isMyTurn, setIsMyTurn] = useState(false)
+  const queryClient = useQueryClient()
 
   const { timeLeft, startTimer, stopTimer } = useGameTimer(15, () => {
     if (isMultiplayer && onSubmitGuess) {
@@ -55,8 +56,25 @@ export const PokemonGame = ({
   }, [isMultiplayer, activePlayerId, currentPlayerId, startTimer, stopTimer])
 
   const loadNewPokemon = async () => {
-    const newPokemon = await getPokemon()
-    setPokemon(newPokemon)
+    // Invalidate the query to force a refetch
+    await queryClient.invalidateQueries({ queryKey: ['pokemon'] })
+    // Get the new data
+    const newData = await queryClient.fetchQuery({
+      queryKey: ['pokemon'],
+      queryFn: async () => {
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${
+            Math.floor(Math.random() * 150) + 1
+          }`,
+          {
+            cache: 'no-store',
+            next: { revalidate: 0 },
+          }
+        )
+        return response.json() as Promise<Pokemon>
+      },
+    })
+    setPokemon(newData as Pokemon)
   }
 
   const { countdown, start: startCountdown } = useCountdown(3, loadNewPokemon)
@@ -92,7 +110,8 @@ export const PokemonGame = ({
 
       {isMultiplayer && !isMyTurn && (
         <div className='mt-4 text-xl font-semibold text-yellow-300'>
-          Waiting for {players.find(p => p === activePlayerId)?.slice(0, 4)} to guess...
+          Waiting for {players.find((p) => p === activePlayerId)?.slice(0, 4)}{' '}
+          to guess...
         </div>
       )}
 
