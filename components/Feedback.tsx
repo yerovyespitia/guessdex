@@ -11,7 +11,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
       <div className='bg-green-500 text-white rounded-full p-2'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
-          className='h-5 w-5'
+          className='size-4'
           fill='none'
           viewBox='0 0 24 24'
           stroke='currentColor'
@@ -28,7 +28,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
       <div className='bg-red-500 text-white rounded-full p-2'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
-          className='h-5 w-5'
+          className='size-4'
           fill='none'
           viewBox='0 0 24 24'
           stroke='currentColor'
