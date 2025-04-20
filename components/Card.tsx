@@ -13,6 +13,11 @@ type CardProps = {
   onCorrectGuess: () => void
   onWrongGuess: () => void
   isInputDisabled?: boolean
+  isMultiplayer?: boolean
+  playerScores?: Record<string, number>
+  players?: string[]
+  currentPlayerId?: string
+  activePlayerId?: string
 }
 
 export const Card = ({
@@ -20,6 +25,11 @@ export const Card = ({
   onCorrectGuess,
   onWrongGuess,
   isInputDisabled = false,
+  isMultiplayer = false,
+  playerScores = {},
+  players = [],
+  currentPlayerId = '',
+  activePlayerId = ''
 }: CardProps) => {
   const {
     guess,
@@ -66,6 +76,11 @@ export const Card = ({
       <ScoreBoard
         correct={correctGuesses}
         wrong={wrongGuesses}
+        isMultiplayer={isMultiplayer}
+        playerScores={playerScores}
+        players={players}
+        currentPlayerId={currentPlayerId}
+        activePlayerId={activePlayerId}
       />
 
       <Image
@@ -73,7 +88,7 @@ export const Card = ({
         height={384}
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={`Random pokemon artwork`}
-        className={`${isCorrect ? 'brightness-100 ' : 'brightness-0'} w-full`}
+        className={`${isCorrect || (isMultiplayer && currentPlayerId === activePlayerId) ? 'brightness-100' : 'brightness-0'} w-full`}
         draggable={false}
         onContextMenu={(e) => e.preventDefault()}
       />
@@ -85,15 +100,17 @@ export const Card = ({
         />
       </div>
 
-      <div className='flex items-center justify-center gap-2 w-full'>
-        <GuessForm
-          ref={inputRef}
-          value={guess}
-          onChange={setGuess}
-          onSubmit={handleGuess}
-          disabled={isInputDisabled}
-        />
-      </div>
+      {(!isMultiplayer || (isMultiplayer && currentPlayerId === activePlayerId)) && (
+        <div className='flex items-center justify-center gap-2 w-full'>
+          <GuessForm
+            ref={inputRef}
+            value={guess}
+            onChange={setGuess}
+            onSubmit={handleGuess}
+            disabled={isInputDisabled}
+          />
+        </div>
+      )}
     </div>
   )
 }
