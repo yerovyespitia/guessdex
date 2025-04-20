@@ -101,31 +101,44 @@ export default function Room() {
 
     socket.on('correct_guess', (data) => {
       console.log('Correct guess:', data)
-      setGameState((prev: GameState | null) => ({
-        ...prev,
-        scores: data.scores,
-        guessedPlayers: data.guessedPlayers,
-        players: prev?.players || [],
-        currentPokemon: prev?.currentPokemon,
-        activePlayerId: prev?.activePlayerId,
-      }))
+      setGameState((prev: GameState | null) => {
+        if (!prev) return null
+        console.log('Previous game state:', prev)
+        console.log('New active player ID:', data.activePlayerId)
+        return {
+          ...prev,
+          scores: data.scores,
+          guessedPlayers: data.guessedPlayers,
+          activePlayerId: data.activePlayerId,
+        }
+      })
     })
 
     socket.on('round_complete', (data) => {
       console.log('Round complete:', data)
-      setGameState((prev: GameState | null) => ({
-        ...prev,
-        currentPokemon: data.newPokemon,
-        scores: data.scores,
-        activePlayerId: data.activePlayerId,
-        guessedPlayers: [],
-        players: prev?.players || [],
-      }))
+      setGameState((prev: GameState | null) => {
+        console.log('Previous game state:', prev)
+        console.log('New Pokemon:', data.newPokemon)
+        console.log('New active player ID:', data.activePlayerId)
+        return {
+          ...prev,
+          currentPokemon: data.newPokemon,
+          scores: data.scores,
+          activePlayerId: data.activePlayerId,
+          guessedPlayers: [],
+          players: prev?.players || [],
+        }
+      })
 
       // Update the query cache with the new Pokemon
       if (data.newPokemon) {
         queryClient.setQueryData(['pokemon'], data.newPokemon)
       }
+    })
+    
+    socket.on('disable_guess', () => {
+      console.log('Guess disabled')
+      // This event will be handled by the PokemonGame component
     })
 
     // Cleanup function
@@ -137,6 +150,7 @@ export default function Room() {
       socket.off('correct_guess')
       socket.off('round_complete')
       socket.off('room_created')
+      socket.off('disable_guess')
       socket.emit('leave_room', roomCode)
     }
   }, [socket, isConnected, roomCode, queryClient])
@@ -226,7 +240,7 @@ export default function Room() {
           Copy
         </button>
       </div>
-      {gameState.currentPokemon && socket && (
+      {gameState.currentPokemon && socket && gameState.players.length >= 2 && (
         <PokemonGame
           initialPokemon={gameState.currentPokemon}
           onSubmitGuess={(guess) =>
@@ -239,6 +253,14 @@ export default function Room() {
           activePlayerId={gameState.activePlayerId || ''}
         />
       )}
+      {(!gameState.currentPokemon || gameState.players.length < 2) &&
+        socket && (
+          <div className='text-xl font-semibold text-yellow-300'>
+            {gameState.players.length === 1
+              ? 'Waiting for another player to join...'
+              : 'Waiting for your turn...'}
+          </div>
+        )}
     </div>
   )
 }
