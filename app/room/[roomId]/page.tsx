@@ -5,6 +5,7 @@ import { useSocket } from '@/contexts/SocketContext'
 import { useParams, useRouter } from 'next/navigation'
 import { PokemonGame } from '@/components/PokemonGame'
 import { Pokemon } from '@/types/pokemon'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface GameState {
   players: string[]
@@ -18,6 +19,7 @@ export default function Room() {
   const { socket, isConnected } = useSocket()
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [roomCode, setRoomCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [gameState, setGameState] = useState<GameState | null>(null)
@@ -46,7 +48,7 @@ export default function Room() {
     }
 
     console.log('Joining room:', roomCode)
-    
+
     // Join the room
     socket.emit('join_room', roomCode)
 
@@ -66,6 +68,11 @@ export default function Room() {
       console.log('Received game state:', state)
       setGameState(state)
       setConnectedPlayers(state.players || [])
+
+      // If there's a new Pokemon in the game state, update the query cache
+      if (state.currentPokemon) {
+        queryClient.setQueryData(['pokemon'], state.currentPokemon)
+      }
     })
 
     socket.on('player_joined', (data) => {
@@ -76,7 +83,7 @@ export default function Room() {
         scores: data.scores,
         players: data.players,
         activePlayerId: data.activePlayerId,
-        currentPokemon: prev?.currentPokemon
+        currentPokemon: prev?.currentPokemon,
       }))
     })
 
@@ -88,7 +95,7 @@ export default function Room() {
         scores: data.scores,
         players: data.players,
         activePlayerId: data.activePlayerId,
-        currentPokemon: prev?.currentPokemon
+        currentPokemon: prev?.currentPokemon,
       }))
     })
 
@@ -100,7 +107,7 @@ export default function Room() {
         guessedPlayers: data.guessedPlayers,
         players: prev?.players || [],
         currentPokemon: prev?.currentPokemon,
-        activePlayerId: prev?.activePlayerId
+        activePlayerId: prev?.activePlayerId,
       }))
     })
 
@@ -112,8 +119,13 @@ export default function Room() {
         scores: data.scores,
         activePlayerId: data.activePlayerId,
         guessedPlayers: [],
-        players: prev?.players || []
+        players: prev?.players || [],
       }))
+
+      // Update the query cache with the new Pokemon
+      if (data.newPokemon) {
+        queryClient.setQueryData(['pokemon'], data.newPokemon)
+      }
     })
 
     // Cleanup function
@@ -127,7 +139,7 @@ export default function Room() {
       socket.off('room_created')
       socket.emit('leave_room', roomCode)
     }
-  }, [socket, isConnected, roomCode])
+  }, [socket, isConnected, roomCode, queryClient])
 
   // Add revalidation on component mount
   useEffect(() => {
@@ -138,10 +150,10 @@ export default function Room() {
     }
 
     revalidate()
-    
+
     // Revalidate on focus
     window.addEventListener('focus', revalidate)
-    
+
     return () => {
       window.removeEventListener('focus', revalidate)
     }
@@ -176,9 +188,14 @@ export default function Room() {
               {connectedPlayers.map((playerId) => (
                 <li
                   key={playerId}
-                  className={`text-lg ${playerId === currentPlayerId ? 'text-yellow-300' : 'text-white'}`}
+                  className={`text-lg ${
+                    playerId === currentPlayerId
+                      ? 'text-yellow-300'
+                      : 'text-white'
+                  }`}
                 >
-                  Player {connectedPlayers.indexOf(playerId) + 1} {playerId === currentPlayerId ? '(You)' : ''}
+                  Player {connectedPlayers.indexOf(playerId) + 1}{' '}
+                  {playerId === currentPlayerId ? '(You)' : ''}
                 </li>
               ))}
             </ul>
@@ -203,7 +220,7 @@ export default function Room() {
               navigator.clipboard.writeText(roomCode)
             }
           }}
-          className='px-3 py-1 bg-purple-900 rounded-lg hover:bg-purple-700 transition-colors'
+          className='px-3 py-1 bg-purple-900 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer'
           title='Copy room code'
         >
           Copy
