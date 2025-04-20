@@ -1,24 +1,58 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from './Card'
 import { Pokemon } from '@/types/pokemon'
 import { getPokemon } from '@/utils/get'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Countdown } from './Countdown'
+import { useGameTimer } from '@/hooks/useGameTimer'
 
 type PokemonGameProps = {
   initialPokemon: Pokemon
   onSubmitGuess?: (guess: string) => void
   isMultiplayer?: boolean
+  playerScores?: Record<string, number>
+  players?: string[]
+  currentPlayerId?: string
+  activePlayerId?: string
 }
 
 export const PokemonGame = ({
   initialPokemon,
   onSubmitGuess,
   isMultiplayer = false,
+  playerScores = {},
+  players = [],
+  currentPlayerId = '',
+  activePlayerId = ''
 }: PokemonGameProps) => {
   const [pokemon, setPokemon] = useState<Pokemon>(initialPokemon)
+  const [isMyTurn, setIsMyTurn] = useState(false)
+
+  const { timeLeft, startTimer, stopTimer } = useGameTimer(15, () => {
+    if (isMultiplayer && onSubmitGuess) {
+      onSubmitGuess('')
+    }
+  })
+
+  useEffect(() => {
+    setPokemon(initialPokemon)
+  }, [initialPokemon])
+
+  useEffect(() => {
+    if (isMultiplayer && activePlayerId) {
+      const isActive = activePlayerId === currentPlayerId
+      setIsMyTurn(isActive)
+      if (isActive) {
+        startTimer()
+      } else {
+        stopTimer()
+      }
+    } else {
+      setIsMyTurn(true)
+    }
+  }, [isMultiplayer, activePlayerId, currentPlayerId, startTimer, stopTimer])
 
   const loadNewPokemon = async () => {
     const newPokemon = await getPokemon()
@@ -29,6 +63,7 @@ export const PokemonGame = ({
 
   const handleCorrectGuess = () => {
     if (isMultiplayer && onSubmitGuess) {
+      stopTimer()
       onSubmitGuess(pokemon.name)
     } else {
       startCountdown()
@@ -47,8 +82,25 @@ export const PokemonGame = ({
         pokemon={pokemon}
         onCorrectGuess={handleCorrectGuess}
         onWrongGuess={handleWrongGuess}
-        isInputDisabled={countdown !== null}
+        isInputDisabled={countdown !== null || (isMultiplayer && !isMyTurn)}
+        isMultiplayer={isMultiplayer}
+        playerScores={playerScores}
+        players={players}
+        currentPlayerId={currentPlayerId}
+        activePlayerId={activePlayerId}
       />
+
+      {isMultiplayer && !isMyTurn && (
+        <div className='mt-4 text-xl font-semibold text-yellow-300'>
+          Waiting for {players.find(p => p === activePlayerId)?.slice(0, 4)} to guess...
+        </div>
+      )}
+
+      {isMultiplayer && isMyTurn && timeLeft !== null && (
+        <div className='mt-4 text-xl font-semibold text-yellow-300'>
+          Time left: {timeLeft}s
+        </div>
+      )}
 
       <Countdown value={countdown} />
     </div>
