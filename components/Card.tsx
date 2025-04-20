@@ -42,6 +42,7 @@ export const Card = ({
   } = useGuess(pokemon, onCorrectGuess, onWrongGuess)
 
   const [showName, setShowName] = useState(false)
+  const [hasGuessed, setHasGuessed] = useState(false)
   const hasInteractedRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -51,6 +52,7 @@ export const Card = ({
 
   useEffect(() => {
     setShowName(false)
+    setHasGuessed(false)
   }, [pokemon])
 
   const handleGuess = () => {
@@ -59,11 +61,14 @@ export const Card = ({
     setShowName(true)
     
     if (isCorrect) {
+      console.log('Correct guess, showing name for 1 second')
+      setHasGuessed(true)
       setTimeout(() => {
         setShowName(false)
         onCorrectGuess()
       }, 1000)
     } else {
+      console.log('Wrong guess, showing feedback for 1 second')
       setTimeout(() => {
         setShowName(false)
         onWrongGuess()
@@ -88,7 +93,7 @@ export const Card = ({
         height={384}
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={`Random pokemon artwork`}
-        className={`${isCorrect || (isMultiplayer && currentPlayerId === activePlayerId) ? 'brightness-100' : 'brightness-0'} w-full`}
+        className={`${isCorrect ? 'brightness-100' : 'brightness-0'} w-full`}
         draggable={false}
         onContextMenu={(e) => e.preventDefault()}
       />
@@ -100,7 +105,7 @@ export const Card = ({
         />
       </div>
 
-      {(!isMultiplayer || (isMultiplayer && currentPlayerId === activePlayerId)) && (
+      {(!isMultiplayer || (isMultiplayer && currentPlayerId === activePlayerId && players.length >= 2)) && !hasGuessed && (
         <div className='flex items-center justify-center gap-2 w-full'>
           <GuessForm
             ref={inputRef}
