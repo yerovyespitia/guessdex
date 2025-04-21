@@ -29,7 +29,7 @@ export const Card = ({
   playerScores = {},
   players = [],
   currentPlayerId = '',
-  activePlayerId = ''
+  activePlayerId = '',
 }: CardProps) => {
   const {
     guess,
@@ -59,7 +59,7 @@ export const Card = ({
     hasInteractedRef.current = true
     submitGuess()
     setShowName(true)
-    
+
     if (isCorrect) {
       console.log('Correct guess, showing name for 1 second')
       setHasGuessed(true)
@@ -69,9 +69,9 @@ export const Card = ({
       }, 1000)
     } else {
       console.log('Wrong guess, showing feedback for 1 second')
+      onWrongGuess()
       setTimeout(() => {
         setShowName(false)
-        onWrongGuess()
       }, 1000)
     }
   }
@@ -105,17 +105,21 @@ export const Card = ({
         />
       </div>
 
-      {(!isMultiplayer || (isMultiplayer && currentPlayerId === activePlayerId && players.length >= 2)) && !hasGuessed && (
-        <div className='flex items-center justify-center gap-2 w-full'>
-          <GuessForm
-            ref={inputRef}
-            value={guess}
-            onChange={setGuess}
-            onSubmit={handleGuess}
-            disabled={isInputDisabled}
-          />
-        </div>
-      )}
+      {(!isMultiplayer ||
+        (isMultiplayer &&
+          currentPlayerId === activePlayerId &&
+          players.length >= 2)) &&
+        !hasGuessed && (
+          <div className='flex items-center justify-center gap-2 w-full'>
+            <GuessForm
+              ref={inputRef}
+              value={guess}
+              onChange={setGuess}
+              onSubmit={handleGuess}
+              disabled={isInputDisabled}
+            />
+          </div>
+        )}
     </div>
   )
 }
