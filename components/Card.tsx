@@ -39,7 +39,7 @@ export const Card = ({
     correctGuesses,
     wrongGuesses,
     submitGuess,
-  } = useGuess(pokemon, onCorrectGuess, onWrongGuess)
+  } = useGuess(pokemon)
 
   const [showName, setShowName] = useState(false)
   const [hasGuessed, setHasGuessed] = useState(false)
@@ -57,10 +57,10 @@ export const Card = ({
 
   const handleGuess = () => {
     hasInteractedRef.current = true
-    submitGuess()
+    const isGuessCorrect = submitGuess()
     setShowName(true)
 
-    if (isCorrect) {
+    if (isGuessCorrect) {
       console.log('Correct guess, showing name for 1 second')
       setHasGuessed(true)
       setTimeout(() => {
