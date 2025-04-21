@@ -5,7 +5,6 @@ import { Card } from './Card'
 import { Pokemon } from '@/types/pokemon'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Countdown } from './Countdown'
-// import { useGameTimer } from '@/hooks/useGameTimer'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSocket } from '@/contexts/SocketContext'
 
@@ -34,12 +33,6 @@ export const PokemonGame = ({
   const queryClient = useQueryClient()
   const { socket } = useSocket()
 
-  // const { timeLeft, startTimer, stopTimer } = useGameTimer(15, () => {
-  //   if (isMultiplayer && onSubmitGuess) {
-  //     onSubmitGuess('')
-  //   }
-  // })
-
   useEffect(() => {
     setPokemon(initialPokemon)
     setIsGuessDisabled(false)
@@ -52,15 +45,6 @@ export const PokemonGame = ({
         `Player ${currentPlayerId} is ${isActive ? 'active' : 'not active'}`
       )
       setIsMyTurn(isActive)
-
-      // Only start the timer if there are at least 2 players and it's the active player's turn
-      if (isActive && players.length >= 2) {
-        console.log('Starting timer for player:', currentPlayerId)
-        // startTimer()
-      } else {
-        console.log('Stopping timer for player:', currentPlayerId)
-        // stopTimer()
-      }
     } else {
       setIsMyTurn(true)
     }
@@ -75,10 +59,18 @@ export const PokemonGame = ({
       setIsGuessDisabled(true)
     }
 
+    const handleWrongGuess = () => {
+      console.log('Wrong guess for player:', currentPlayerId)
+      setIsGuessDisabled(true)
+      setIsMyTurn(false) // Update turn state since it's now another player's turn
+    }
+
     socket.on('disable_guess', handleDisableGuess)
+    socket.on('wrong_guess', handleWrongGuess)
 
     return () => {
       socket.off('disable_guess', handleDisableGuess)
+      socket.off('wrong_guess', handleWrongGuess)
     }
   }, [socket, currentPlayerId])
 
@@ -111,7 +103,6 @@ export const PokemonGame = ({
 
   const handleCorrectGuess = () => {
     if (isMultiplayer && onSubmitGuess) {
-      // stopTimer()
       onSubmitGuess(pokemon.name)
       setIsGuessDisabled(true)
     } else {
@@ -120,7 +111,10 @@ export const PokemonGame = ({
   }
 
   const handleWrongGuess = () => {
-    if (!isMultiplayer) {
+    if (isMultiplayer && onSubmitGuess) {
+      onSubmitGuess('') // Send empty string to signal wrong guess to server
+      setIsGuessDisabled(true)
+    } else {
       startCountdown()
     }
   }
@@ -147,12 +141,6 @@ export const PokemonGame = ({
           to guess...
         </div>
       )}
-
-      {/* {isMultiplayer && isMyTurn && timeLeft !== null && (
-        <div className='mt-4 text-xl font-semibold text-yellow-300'>
-          Time left: {timeLeft}s
-        </div>
-      )} */}
 
       <Countdown value={countdown} />
     </div>
