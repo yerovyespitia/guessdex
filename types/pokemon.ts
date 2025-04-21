@@ -9,4 +9,14 @@ export type PokemonSprites = {
 export type Pokemon = {
   sprites: PokemonSprites
   name: string
+  id: number
+}
+
+export type GameRoom = {
+  id: string
+  players: string[]
+  currentPokemon: Pokemon
+  scores: Record<string, number>
+  activePlayerId: string
+  guessedPlayers: string[]
 }
