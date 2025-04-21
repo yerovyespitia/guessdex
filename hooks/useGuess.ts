@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Pokemon } from '@/types/pokemon'
 
-export const useGuess = (
-  pokemon: Pokemon,
-  onCorrect: () => void,
-  onWrong: () => void
-) => {
+export const useGuess = (pokemon: Pokemon) => {
   const [guess, setGuess] = useState('')
   const [isCorrect, setIsCorrect] = useState(false)
   const [showWrongIcon, setShowWrongIcon] = useState(false)
@@ -24,12 +20,12 @@ export const useGuess = (
 
     if (isGuessCorrect) {
       setCorrectGuesses((prev) => prev + 1)
-      onCorrect()
     } else {
       setWrongGuesses((prev) => prev + 1)
       setShowWrongIcon(true)
-      onWrong()
     }
+
+    return isGuessCorrect
   }
 
   return {
