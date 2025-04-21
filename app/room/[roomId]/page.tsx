@@ -114,6 +114,27 @@ export default function Room() {
       })
     })
 
+    socket.on('turn_changed', (data) => {
+      console.log('Turn changed:', data)
+      setGameState((prev: GameState | null) => {
+        if (!prev) return null
+        console.log('Previous game state:', prev)
+        console.log('New active player ID:', data.activePlayerId)
+        console.log('New Pokemon received:', data.newPokemon)
+        return {
+          ...prev,
+          scores: data.scores,
+          activePlayerId: data.activePlayerId,
+          currentPokemon: data.newPokemon || prev.currentPokemon,
+        }
+      })
+
+      // Update the query cache with the new Pokemon
+      if (data.newPokemon) {
+        queryClient.setQueryData(['pokemon'], data.newPokemon)
+      }
+    })
+
     socket.on('round_complete', (data) => {
       console.log('Round complete:', data)
       setGameState((prev: GameState | null) => {
@@ -135,7 +156,7 @@ export default function Room() {
         queryClient.setQueryData(['pokemon'], data.newPokemon)
       }
     })
-    
+
     socket.on('disable_guess', () => {
       console.log('Guess disabled')
       // This event will be handled by the PokemonGame component
@@ -148,6 +169,7 @@ export default function Room() {
       socket.off('player_joined')
       socket.off('player_left')
       socket.off('correct_guess')
+      socket.off('turn_changed')
       socket.off('round_complete')
       socket.off('room_created')
       socket.off('disable_guess')
