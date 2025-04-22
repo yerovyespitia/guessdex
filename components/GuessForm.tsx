@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react'
+import { useState, forwardRef, useEffect } from 'react'
 
 type GuessFormProps = {
   value: string
@@ -10,6 +10,17 @@ type GuessFormProps = {
 export const GuessForm = forwardRef<HTMLInputElement, GuessFormProps>(
   ({ value, onChange, onSubmit, disabled }, ref) => {
     const [showPlaceholder, setShowPlaceholder] = useState(true)
+
+    // Solo resetear el focus cuando cambia disabled de true a false
+    useEffect(() => {
+      if (!disabled && ref && typeof ref !== 'function' && ref.current) {
+        const inputElement = ref.current;
+        // Dar focus al input sin el blur/focus que causa problemas
+        setTimeout(() => {
+          inputElement.focus();
+        }, 50);
+      }
+    }, [disabled, ref]);
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
@@ -31,6 +42,7 @@ export const GuessForm = forwardRef<HTMLInputElement, GuessFormProps>(
           onFocus={() => setShowPlaceholder(false)}
           onBlur={() => setShowPlaceholder(true)}
           disabled={disabled}
+          autoComplete="off"
         />
       </form>
     )
