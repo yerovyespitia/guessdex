@@ -71,8 +71,14 @@ export const Card = ({
       console.log('Wrong guess, showing feedback for 2 seconds')
       setTimeout(() => {
         setShowName(false)
-        onWrongGuess()
-        setLocalInputDisabled(false)
+        
+        if (!isMultiplayer) {
+          onWrongGuess()
+          setLocalInputDisabled(false)
+        } else {
+          onWrongGuess()
+          setLocalInputDisabled(false)
+        }
       }, 2000)
     }
   }
