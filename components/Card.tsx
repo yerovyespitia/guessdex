@@ -42,37 +42,38 @@ export const Card = ({
   } = useGuess(pokemon)
 
   const [showName, setShowName] = useState(false)
-  const [hasGuessed, setHasGuessed] = useState(false)
+  const [localInputDisabled, setLocalInputDisabled] = useState(false)
   const hasInteractedRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (hasInteractedRef.current && !isInputDisabled) inputRef.current?.focus()
   }, [pokemon, isInputDisabled])
-
+  
   useEffect(() => {
     setShowName(false)
-    setHasGuessed(false)
+    setLocalInputDisabled(false)
   }, [pokemon])
 
   const handleGuess = () => {
     hasInteractedRef.current = true
+    setLocalInputDisabled(true)
     const isGuessCorrect = submitGuess()
     setShowName(true)
 
     if (isGuessCorrect) {
-      console.log('Correct guess, showing name for 1 second')
-      setHasGuessed(true)
+      console.log('Correct guess, showing name for 2 seconds')
       setTimeout(() => {
         setShowName(false)
         onCorrectGuess()
-      }, 1000)
+      }, 2000)
     } else {
-      console.log('Wrong guess, showing feedback for 1 second')
-      onWrongGuess()
+      console.log('Wrong guess, showing feedback for 2 seconds')
       setTimeout(() => {
         setShowName(false)
-      }, 1000)
+        onWrongGuess()
+        setLocalInputDisabled(false)
+      }, 2000)
     }
   }
 
@@ -108,15 +109,14 @@ export const Card = ({
       {(!isMultiplayer ||
         (isMultiplayer &&
           currentPlayerId === activePlayerId &&
-          players.length >= 2)) &&
-        !hasGuessed && (
+          players.length >= 2)) && (
           <div className='flex items-center justify-center gap-2 w-full'>
             <GuessForm
               ref={inputRef}
               value={guess}
               onChange={setGuess}
               onSubmit={handleGuess}
-              disabled={isInputDisabled}
+              disabled={isInputDisabled || localInputDisabled}
             />
           </div>
         )}
