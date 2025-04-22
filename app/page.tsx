@@ -13,7 +13,7 @@ export default function Home() {
   }
 
   if (error) {
-    return <Error />
+    return <Error error={'Loading Pokémon'} />
   }
 
   return (
