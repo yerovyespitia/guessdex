@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useGameRoom } from '@/hooks/useGameRoom'
 import { useEffect, useState } from 'react'
 import { RoomUI } from '@/components/RoomUI'
+import { Error } from '@/components/Error'
 
 export default function RoomPage() {
   const params = useParams()
@@ -36,17 +37,7 @@ export default function RoomPage() {
   }, [socket, isConnected, roomCode])
 
   if (error) {
-    return (
-      <div className='h-screen flex items-center justify-center bg-purple-800 text-white flex-col'>
-        <h1 className='text-2xl mb-4'>Error: {error}</h1>
-        <button
-          onClick={() => router.push('/')}
-          className='bg-white text-purple-800 px-4 py-2 rounded'
-        >
-          Go Home
-        </button>
-      </div>
-    )
+    return <Error error={'Room not found'} />
   }
 
   if (!isConnected || !gameState) {
