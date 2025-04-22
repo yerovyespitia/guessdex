@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useGameRoom } from '@/hooks/useGameRoom'
 import { useEffect, useState } from 'react'
 import { RoomUI } from '@/components/RoomUI'
@@ -8,7 +8,6 @@ import { Error } from '@/components/Error'
 
 export default function RoomPage() {
   const params = useParams()
-  const router = useRouter()
   const [roomCode, setRoomCode] = useState<string | null>(null)
 
   useEffect(() => {
