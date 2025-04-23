@@ -36,13 +36,23 @@ export const ScoreBoard = ({
   }
 
   return (
-    <div className='flex justify-between gap-12 text-white mb-4'>
-      <p className='text-xl md:text-3xl font-bold'>
-        Correct: <span className='font-medium'>{correct}</span>
-      </p>
-      <p className='text-xl md:text-3xl font-bold'>
-        Wrong: <span className='font-medium'>{wrong}</span>
-      </p>
+    <div className='flex justify-center gap-12 text-white mb-4'>
+      <div className='rounded-full px-4 py-1 bg-green-500 flex items-center gap-2'>
+        <img
+          src='./public/svgs/check.svg'
+          alt='check'
+          className='size-4 filter invert'
+        />
+        <p>{correct}</p>
+      </div>
+      <div className='rounded-full px-4 py-1 bg-red-500 flex items-center gap-2'>
+        <img
+          src='./public/svgs/wrong.svg'
+          alt='wrong'
+          className='size-4 filter invert'
+        />
+        <p>{wrong}</p>
+      </div>
     </div>
   )
 }
