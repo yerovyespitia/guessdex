@@ -3,3 +3,22 @@
 body {
   @apply bg-purple-800 text-white;
 }
+
+@font-face {
+  font-family: 'PokemonHollow';
+  src: url('./assets/fonts/PokemonHollow.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PokemonSolid';
+  src: url('./assets/fonts/PokemonSolid.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --font-primary: 'PokemonHollow';
+  --font-secondary: 'PokemonSolid';
+}
