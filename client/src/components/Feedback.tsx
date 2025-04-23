@@ -9,37 +9,19 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
   const icon =
     status === 'correct' ? (
       <div className='bg-green-500 text-white rounded-full p-2'>
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          className='size-4'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth={2}
-            d='M5 13l4 4L19 7'
-          />
-        </svg>
+        <img
+          src='./public/svgs/check.svg'
+          alt='check'
+          className='size-4 filter invert'
+        />
       </div>
     ) : (
       <div className='bg-red-500 text-white rounded-full p-2'>
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          className='size-4'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth={2}
-            d='M6 18L18 6M6 6l12 12'
-          />
-        </svg>
+        <img
+          src='./public/svgs/wrong.svg'
+          alt='wrong'
+          className='size-4 filter invert'
+        />
       </div>
     )
 
