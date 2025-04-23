@@ -39,7 +39,7 @@ export const ScoreBoard = ({
     <div className='flex justify-center gap-12 text-white mb-4'>
       <div className='rounded-full px-4 py-1 bg-green-500 flex items-center gap-2'>
         <img
-          src='./public/svgs/check.svg'
+          src='/svgs/check.svg'
           alt='check'
           className='size-4 filter invert'
         />
@@ -47,7 +47,7 @@ export const ScoreBoard = ({
       </div>
       <div className='rounded-full px-4 py-1 bg-red-500 flex items-center gap-2'>
         <img
-          src='./public/svgs/wrong.svg'
+          src='/svgs/wrong.svg'
           alt='wrong'
           className='size-4 filter invert'
         />
