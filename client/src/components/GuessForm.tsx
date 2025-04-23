@@ -30,12 +30,12 @@ export const GuessForm = forwardRef<HTMLInputElement, GuessFormProps>(
     return (
       <form
         onSubmit={handleSubmit}
-        className='flex justify-center items-center'
+        className='flex justify-center items-center w-full'
       >
         <input
           ref={ref}
           type='text'
-          className='px-6 py-3 w-80 md:w-96 border text-lg text-center border-white rounded-lg text-white outline-none bg-transparent disabled:opacity-50 disabled:cursor-not-allowed'
+          className='px-6 py-3 w-full border text-lg text-center border-white rounded-lg text-white outline-none bg-transparent disabled:opacity-50 disabled:cursor-not-allowed'
           placeholder={showPlaceholder ? 'Make a guess...' : ''}
           value={value}
           onChange={(e) => onChange(e.target.value)}
