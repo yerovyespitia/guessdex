@@ -10,7 +10,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
     status === 'correct' ? (
       <div className='bg-green-500 text-white rounded-full p-2'>
         <img
-          src='./public/svgs/check.svg'
+          src='/svgs/check.svg'
           alt='check'
           className='size-4 filter invert'
         />
@@ -18,7 +18,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
     ) : (
       <div className='bg-red-500 text-white rounded-full p-2'>
         <img
-          src='./public/svgs/wrong.svg'
+          src='/svgs/wrong.svg'
           alt='wrong'
           className='size-4 filter invert'
         />
@@ -26,7 +26,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
     )
 
   return (
-    <div className='flex items-center justify-center gap-2'>
+    <div className='flex items-center justify-center gap-2 transition-all duration-800'>
       <div className='text-white text-2xl font-bold text-center'>
         <p className='capitalize'>{name}</p>
       </div>
