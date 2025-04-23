@@ -1,15 +1,30 @@
-# guessdex-react
+# Guessdex - A Pokémon Guessing Game
 
-To install dependencies:
+Guessdex is an interactive web game where players test their Pokémon knowledge by trying to identify Pokémon from their silhouettes. Similar to the "Who's that Pokémon?" segments from the anime series, players are presented with a darkened silhouette and must guess the correct Pokémon name.
 
-```bash
-bun install
-```
+## Features
 
-To run:
+- Silhouette-based Pokémon guessing gameplay
+- Score tracking system
+- Hints system
+- Feedback after each guess
+- Responsive design for both desktop and mobile
 
-```bash
-bun run index.ts
-```
+## Tech Stack
 
-This project was created using `bun init` in bun v1.2.10. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+### Frontend
+- React 19
+- TypeScript
+- Vite
+- TailwindCSS
+- React Query for API management
+- React Router for navigation
+
+### Backend
+- Bun
+- Socket.io
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
