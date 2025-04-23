@@ -4,7 +4,7 @@ type CountdownProps = {
 
 export const Countdown = ({ value }: CountdownProps) => {
   return (
-    <div className='text-white text-2xl font-bold mt-2 h-[36px] flex items-center justify-center'>
+    <div className='text-white text-2xl font-bold mt-2 h-[36px] flex items-center justify-center transition-all duration-500'>
       {value !== null && <p>Next Pokémon in: {value}</p>}
     </div>
   )
