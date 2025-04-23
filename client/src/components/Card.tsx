@@ -87,7 +87,7 @@ export const Card = ({
   }
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col gap-4 max-w-[330px] md:max-w-full w-full'>
       <ScoreBoard
         correct={correctGuesses}
         wrong={wrongGuesses}
@@ -106,18 +106,16 @@ export const Card = ({
         onContextMenu={(e) => e.preventDefault()}
       />
 
-      <div className='h-[32px] flex flex-col items-center justify-center'>
-        <Feedback
-          status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
-          name={showName ? pokemon.name : ''}
-        />
-      </div>
+      <Feedback
+        status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
+        name={showName ? pokemon.name : ''}
+      />
 
       {(!isMultiplayer ||
         (isMultiplayer &&
           currentPlayerId === activePlayerId &&
           players.length >= 2)) && (
-        <div className='flex items-center justify-center gap-2 w-full'>
+        <div className='flex items-center justify-center gap-2 max-w-full md:max-w-[380px] mx-auto w-full'>
           <GuessForm
             ref={inputRef}
             value={guess}
