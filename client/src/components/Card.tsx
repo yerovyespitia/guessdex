@@ -4,7 +4,7 @@ import { Feedback } from './Feedback'
 import { GuessForm } from './GuessForm'
 import { useGuess } from '../hooks/useGuess'
 import { useEffect, useRef, useState } from 'react'
-
+import { Progressbar } from './Progressbar'
 type CardProps = {
   pokemon: Pokemon
   onCorrectGuess: () => void
@@ -36,6 +36,7 @@ export const Card = ({
     correctGuesses,
     wrongGuesses,
     submitGuess,
+    incrementWrongGuesses,
   } = useGuess(pokemon)
 
   const [showName, setShowName] = useState(false)
@@ -76,6 +77,8 @@ export const Card = ({
             clearInterval(timerRef.current)
           }
           setTimer(15)
+          // Increment wrong guesses when time runs out
+          incrementWrongGuesses()
           onWrongGuess()
           return 15
         }
@@ -135,9 +138,7 @@ export const Card = ({
         activePlayerId={activePlayerId}
       />
 
-      <div className='text-white text-2xl font-bold text-center mb-2'>
-        Time: {timer}s
-      </div>
+      <Progressbar timer={timer} />
 
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
