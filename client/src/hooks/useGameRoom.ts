@@ -93,11 +93,8 @@ export function useGameRoom(roomCode: string | null) {
       socket.on(event, handler)
     }
 
-    socket.on('disable_guess', () => {})
-
     return () => {
       for (const event of Object.keys(handlers)) socket.off(event)
-      socket.off('disable_guess')
       socket.emit('leave_room', roomCode)
     }
   }, [socket, isConnected, roomCode, queryClient])
