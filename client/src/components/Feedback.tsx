@@ -26,7 +26,7 @@ export const Feedback = ({ status, name }: FeedbackProps) => {
     )
 
   return (
-    <div className='flex items-center justify-center gap-2 transition-all duration-800'>
+    <div className='flex items-center justify-center gap-2'>
       <div className='text-white text-2xl font-bold text-center'>
         <p className='capitalize'>{name}</p>
       </div>
