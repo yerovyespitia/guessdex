@@ -43,7 +43,7 @@ export const ScoreBoard = ({
           alt='check'
           className='size-4 filter invert'
         />
-        <p>{correct}</p>
+        <p className='font-bold'>{correct}</p>
       </div>
       <div className='rounded-full px-4 py-1 bg-red-500 flex items-center gap-2'>
         <img
@@ -51,7 +51,7 @@ export const ScoreBoard = ({
           alt='wrong'
           className='size-4 filter invert'
         />
-        <p>{wrong}</p>
+        <p className='font-bold'>{wrong}</p>
       </div>
     </div>
   )
