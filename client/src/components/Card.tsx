@@ -42,19 +42,25 @@ export const Card = ({
   const [localInputDisabled, setLocalInputDisabled] = useState(false)
   const [keepRevealed, setKeepRevealed] = useState(false)
   const [currentPokemonId, setCurrentPokemonId] = useState<number | null>(null)
+  const [timer, setTimer] = useState(15)
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined)
   const hasInteractedRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Track Pokemon changes by ID to properly handle transitions
   useEffect(() => {
     if (pokemon.id !== currentPokemonId) {
       if (keepRevealed) {
-        // Only reset keepRevealed when we get a new pokemon
         setKeepRevealed(false)
       }
       setCurrentPokemonId(pokemon.id)
       setShowName(false)
       setLocalInputDisabled(false)
+      // Reset timer when pokemon changes
+      setTimer(15)
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+      startTimer()
     }
   }, [pokemon, currentPokemonId, keepRevealed])
 
@@ -62,15 +68,35 @@ export const Card = ({
     if (hasInteractedRef.current && !isInputDisabled) inputRef.current?.focus()
   }, [pokemon, isInputDisabled])
 
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current)
+          }
+          setTimer(15)
+          onWrongGuess()
+          return 15
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
   const handleGuess = () => {
     hasInteractedRef.current = true
     setLocalInputDisabled(true)
     const isGuessCorrect = submitGuess()
     setShowName(true)
 
+    // Clear the timer on guess
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+
     if (isGuessCorrect) {
       console.log('Correct guess, showing name for 2 seconds')
-      // Keep the Pokemon revealed until we get a new one
       setKeepRevealed(true)
       setTimeout(() => {
         setShowName(false)
@@ -80,11 +106,22 @@ export const Card = ({
       console.log('Wrong guess, showing feedback for 2 seconds')
       setTimeout(() => {
         setShowName(false)
-        onWrongGuess()
         setLocalInputDisabled(false)
+        // Don't restart timer here, just resume the current one
+        setTimer((prev) => prev)
+        onWrongGuess()
       }, 2000)
     }
   }
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className='flex flex-col gap-4 max-w-[330px] md:max-w-full w-full'>
@@ -98,6 +135,10 @@ export const Card = ({
         activePlayerId={activePlayerId}
       />
 
+      <div className='text-white text-2xl font-bold text-center mb-2'>
+        Time: {timer}s
+      </div>
+
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={`Random pokemon artwork`}
@@ -106,10 +147,12 @@ export const Card = ({
         onContextMenu={(e) => e.preventDefault()}
       />
 
-      <Feedback
-        status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
-        name={showName ? pokemon.name : ''}
-      />
+      <div className='transition-all duration-800'>
+        <Feedback
+          status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
+          name={showName ? pokemon.name : ''}
+        />
+      </div>
 
       {(!isMultiplayer ||
         (isMultiplayer &&
