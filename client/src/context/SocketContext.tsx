@@ -17,7 +17,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     console.log('Initializing socket connection...')
-    const socketInstance = io('http://localhost:3000')
+    const socketInstance = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000')
 
     socketInstance.on('connect', () => {
       console.log('Socket connected!', socketInstance.id)
