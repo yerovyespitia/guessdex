@@ -28,6 +28,11 @@ export const useGuess = (pokemon: Pokemon) => {
     return isGuessCorrect
   }
 
+  const incrementWrongGuesses = () => {
+    setWrongGuesses((prev) => prev + 1)
+    setShowWrongIcon(true)
+  }
+
   return {
     guess,
     setGuess,
@@ -36,5 +41,6 @@ export const useGuess = (pokemon: Pokemon) => {
     correctGuesses,
     wrongGuesses,
     submitGuess,
+    incrementWrongGuesses,
   }
 }
