@@ -1,12 +1,15 @@
 import { PokemonGame } from './PokemonGame'
 import { GameState } from '../hooks/useGameRoom'
+import { GameOverModal } from './GameOverModal'
 
 interface Props {
   roomCode: string
   gameState: GameState
-  connectedPlayers: string[]
   currentPlayerId: string
   socket: any
+  gameOver: boolean
+  winnerId: string | null
+  restartGame: () => void
 }
 
 export function RoomUI({
@@ -14,6 +17,9 @@ export function RoomUI({
   gameState,
   currentPlayerId,
   socket,
+  gameOver,
+  winnerId,
+  restartGame,
 }: Props) {
   return (
     <div className='flex flex-col items-center justify-center md:h-[calc(100vh-64px)] bg-purple-800 text-white p-4 mt-4 md:mt-0'>
@@ -46,6 +52,16 @@ export function RoomUI({
             ? 'Waiting for another player to join...'
             : 'Waiting for your turn...'}
         </div>
+      )}
+
+      {gameOver && (
+        <GameOverModal
+          isWinner={winnerId === currentPlayerId}
+          onPlayAgain={restartGame}
+          readyPlayers={gameState.readyPlayers || []}
+          currentPlayerId={currentPlayerId}
+          players={gameState.players}
+        />
       )}
     </div>
   )
