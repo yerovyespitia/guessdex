@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
-import { createReadStream, existsSync } from 'node:fs'
+import { createReadStream, existsSync, statSync } from 'node:fs'
 import { join, extname } from 'node:path'
 import { setupSocketEvents } from './manage/game'
 
@@ -10,7 +10,13 @@ const httpServer = createServer((req, res) => {
   // Ruta base del dist del frontend
   const basePath = join(import.meta.dir, '../client/dist')
   const requestedPath = req.url === '/' ? '/index.html' : req.url || ''
-  const filePath = join(basePath, requestedPath)
+  let filePath = join(basePath, requestedPath)
+
+  try {
+    if (existsSync(filePath) && statSync(filePath).isDirectory()) {
+      filePath = join(filePath, 'index.html')
+    }
+  } catch {}
 
   if (existsSync(filePath)) {
     const ext = extname(filePath)
@@ -25,6 +31,7 @@ const httpServer = createServer((req, res) => {
       '.woff': 'font/woff',
       '.woff2': 'font/woff2',
       '.json': 'application/json',
+      '.svg': 'image/svg+xml',
     }
 
     const contentType = contentTypes[ext] || 'application/octet-stream'
