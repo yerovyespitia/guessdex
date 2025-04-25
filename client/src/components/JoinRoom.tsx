@@ -44,7 +44,7 @@ export const JoinForm = ({ disabled }: JoinFormProps) => {
       />
       <button
         type='submit'
-        className='px-6 py-3 bg-white text-purple-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+        className='px-6 py-3 bg-white text-sky-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
         disabled={disabled || !isConnected || !roomCode}
       >
         {isConnected ? 'Join Room' : 'Connecting...'}

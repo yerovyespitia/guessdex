@@ -33,7 +33,7 @@ export const GameOverModal = ({
   return (
     <div className='fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm'>
       <div className='bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full text-center animate-fadeIn'>
-        <h2 className='text-4xl font-bold mb-6 text-purple-600 dark:text-purple-400'>
+        <h2 className='text-4xl font-bold mb-6 text-sky-600 dark:text-sky-400'>
           {isWinner ? 'You Win!' : 'You Lose!'}
         </h2>
         <p className='mb-8 text-lg text-gray-700 dark:text-gray-300'>
@@ -68,7 +68,7 @@ export const GameOverModal = ({
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
           <button
             onClick={handlePlayAgain}
-            className='bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed'
+            className='bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-md transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isPlayerReady}
           >
             {isPlayerReady ? 'Waiting...' : 'Play Again'}

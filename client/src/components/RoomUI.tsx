@@ -22,12 +22,12 @@ export function RoomUI({
   restartGame,
 }: Props) {
   return (
-    <div className='flex flex-col items-center justify-center md:h-[calc(100vh-64px)] bg-purple-800 text-white p-4 mt-4 md:mt-0'>
+    <div className='flex flex-col items-center justify-center sm:h-[calc(100vh-76px)] bg-sky-800 text-white p-4'>
       <div className='flex items-center gap-4 mb-6'>
         <h1 className='text-2xl font-bold'>Room: {roomCode}</h1>
         <button
           onClick={() => navigator.clipboard.writeText(roomCode)}
-          className='px-3 py-1 bg-purple-900 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer'
+          className='px-3 py-1 bg-sky-900 rounded-lg hover:bg-sky-700 transition-colors cursor-pointer'
           title='Copy room code'
         >
           Copy

@@ -46,7 +46,7 @@ function RouteComponent() {
 
   if (!isConnected || !gameState) {
     return (
-      <div className='h-screen flex flex-col items-center justify-center bg-purple-800 text-white p-4'>
+      <div className='h-screen flex flex-col items-center justify-center bg-sky-800 text-white p-4'>
         <h1 className='text-2xl mb-4'>
           {!isConnected ? 'Connecting...' : 'Waiting for players...'}
         </h1>
