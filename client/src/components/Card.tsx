@@ -4,7 +4,7 @@ import { Feedback } from './Feedback'
 import { GuessForm } from './GuessForm'
 import { useGuess } from '../hooks/useGuess'
 import { useEffect, useRef, useState } from 'react'
-import { Progressbar } from './Progressbar'
+
 type CardProps = {
   pokemon: Pokemon
   onCorrectGuess: () => void
@@ -127,7 +127,7 @@ export const Card = ({
   }, [])
 
   return (
-    <div className='flex flex-col gap-4 max-w-[300px] md:max-w-full w-full'>
+    <div className='flex flex-col gap-4 max-w-[300px] sm:max-w-full w-full'>
       <ScoreBoard
         correct={correctGuesses}
         wrong={wrongGuesses}
@@ -136,9 +136,8 @@ export const Card = ({
         players={players}
         currentPlayerId={currentPlayerId}
         activePlayerId={activePlayerId}
+        timer={timer}
       />
-
-      <Progressbar timer={timer} />
 
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
@@ -159,7 +158,7 @@ export const Card = ({
         (isMultiplayer &&
           currentPlayerId === activePlayerId &&
           players.length >= 2)) && (
-        <div className='flex items-center justify-center gap-2 max-w-full md:max-w-[380px] mx-auto w-full'>
+        <div className='flex items-center justify-center gap-2 max-w-full sm:max-w-[380px] mx-auto w-full'>
           <GuessForm
             ref={inputRef}
             value={guess}
