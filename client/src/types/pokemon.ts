@@ -19,4 +19,5 @@ export type GameRoom = {
   scores: Record<string, number>
   activePlayerId: string
   guessedPlayers: string[]
+  readyToRestart?: string[]
 }
