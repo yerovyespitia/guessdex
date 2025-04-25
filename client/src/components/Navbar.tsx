@@ -9,10 +9,10 @@ export const Navbar = () => {
           className='flex items-center gap-2 text-white text-md hover:opacity-80 cursor-pointer'
           title='GuessDex'
         >
-          <div className='bg-black/20 p-2 rounded-full'>
+          <div className='bg-black/20 p-3 md:p-2 rounded-full'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              className='size-4'
+              className='size-5 md:size-4'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -31,10 +31,10 @@ export const Navbar = () => {
           className='flex items-center gap-2 text-white text-md hover:opacity-80 cursor-pointer'
           title='Create Room'
         >
-          <div className='bg-black/20 p-2 rounded-full'>
+          <div className='bg-black/20 p-3 md:p-2 rounded-full'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              className='size-4'
+              className='size-5 md:size-4'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -53,10 +53,10 @@ export const Navbar = () => {
           className='flex items-center gap-2 text-white text-md hover:opacity-80 cursor-pointer'
           title='Join Room'
         >
-          <div className='bg-black/20 p-2 rounded-full'>
+          <div className='bg-black/20 p-3 md:p-2 rounded-full'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              className='size-4'
+              className='size-5 md:size-4'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
