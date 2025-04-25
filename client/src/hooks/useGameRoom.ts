@@ -9,6 +9,7 @@ export interface GameState {
   currentPokemon?: Pokemon
   activePlayerId?: string
   guessedPlayers?: string[]
+  readyPlayers?: string[]
 }
 
 export function useGameRoom(roomCode: string | null) {
@@ -18,6 +19,8 @@ export function useGameRoom(roomCode: string | null) {
   const [connectedPlayers, setConnectedPlayers] = useState<string[]>([])
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [gameOver, setGameOver] = useState(false)
+  const [winnerId, setWinnerId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!socket || !isConnected || !roomCode) return
@@ -72,6 +75,40 @@ export function useGameRoom(roomCode: string | null) {
         if (data.newPokemon)
           queryClient.setQueryData(['pokemon'], data.newPokemon)
       },
+      game_over: (data: any) => {
+        setWinnerId(data.winnerId)
+        setGameOver(true)
+      },
+      hide_game_over: () => {
+        setGameOver(false)
+      },
+      player_ready_to_restart: (data: any) => {
+        // Update readyPlayers in game state
+        setGameState((prev) => 
+          prev 
+            ? {
+                ...prev,
+                readyPlayers: data.readyPlayers,
+              }
+            : null
+        )
+      },
+      game_restarted: (data: any) => {
+        setGameOver(false)
+        setWinnerId(null)
+        setGameState((prev) => 
+          prev 
+            ? {
+                ...prev,
+                scores: data.scores,
+                activePlayerId: data.activePlayerId,
+                readyPlayers: [],
+              }
+            : null
+        )
+        if (data.newPokemon)
+          queryClient.setQueryData(['pokemon'], data.newPokemon)
+      }
     }
 
     function updatePlayerState(
@@ -99,6 +136,12 @@ export function useGameRoom(roomCode: string | null) {
     }
   }, [socket, isConnected, roomCode, queryClient])
 
+  const restartGame = () => {
+    if (socket && roomCode) {
+      socket.emit('restart_game', roomCode)
+    }
+  }
+
   return {
     gameState,
     currentPlayerId,
@@ -106,5 +149,8 @@ export function useGameRoom(roomCode: string | null) {
     error,
     isConnected,
     socket,
+    gameOver,
+    winnerId,
+    restartGame
   }
 }
