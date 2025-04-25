@@ -23,6 +23,9 @@ function RouteComponent() {
     error,
     isConnected,
     socket,
+    gameOver,
+    winnerId,
+    restartGame,
   } = useGameRoom(roomCode)
 
   useEffect(() => {
@@ -65,9 +68,11 @@ function RouteComponent() {
     <RoomUI
       roomCode={roomCode!}
       gameState={gameState}
-      connectedPlayers={connectedPlayers}
       currentPlayerId={currentPlayerId!}
       socket={socket}
+      gameOver={gameOver}
+      winnerId={winnerId}
+      restartGame={restartGame}
     />
   )
 }
