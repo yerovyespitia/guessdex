@@ -18,7 +18,7 @@ export const Error = ({ error }: ErrorProps) => {
       </h1>
       <button
         onClick={pushToHome}
-        className='bg-white font-bold text-sky-800 px-8 py-3 rounded-lg cursor-pointer'
+        className='bg-white font-bold text-sky-800 px-8 py-3 rounded-full cursor-pointer'
       >
         Go Home
       </button>

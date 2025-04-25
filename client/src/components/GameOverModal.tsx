@@ -68,14 +68,14 @@ export const GameOverModal = ({
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
           <button
             onClick={handlePlayAgain}
-            className='bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-md transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed'
+            className='bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-full transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isPlayerReady}
           >
             {isPlayerReady ? 'Waiting...' : 'Play Again'}
           </button>
           <button
             onClick={handleReturnHome}
-            className='bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 px-6 py-3 rounded-md transition-colors text-lg'
+            className='bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 px-6 py-3 rounded-full transition-colors text-lg'
           >
             Return Home
           </button>
