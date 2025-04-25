@@ -107,6 +107,14 @@ export function setupSocketEvents(io: Server, socket: Socket) {
       room.scores[socket.id] = (room.scores[socket.id] || 0) + 1
       room.guessedPlayers.push(socket.id)
 
+      if ((room.scores[socket.id] || 0) >= 10) {
+        io.to(roomId).emit('game_over', {
+          winnerId: socket.id,
+          scores: room.scores,
+        })
+        return
+      }
+
       if (room.guessedPlayers.length === room.players.length) {
         const newPokemon = (await getPokemon()) as Pokemon
         room.currentPokemon = newPokemon
@@ -200,6 +208,67 @@ export function setupSocketEvents(io: Server, socket: Socket) {
             activePlayerId: room.activePlayerId,
           })
         }
+      })
+    }
+  })
+
+  socket.on('restart_game', async (roomId: string) => {
+    const room = rooms.get(roomId)
+    if (!room) return
+
+    if (!room.readyToRestart) {
+      room.readyToRestart = [socket.id]
+    } else if (!room.readyToRestart.includes(socket.id)) {
+      room.readyToRestart.push(socket.id)
+    }
+
+    socket.emit('hide_game_over')
+
+    const allPlayersReady = room.players.every(playerId => 
+      room.readyToRestart?.includes(playerId)
+    )
+
+    if (allPlayersReady) {
+      room.players.forEach(playerId => {
+        room.scores[playerId] = 0
+      })
+      
+      const newPokemon = (await getPokemon()) as Pokemon
+      room.currentPokemon = newPokemon
+      room.guessedPlayers = []
+      room.readyToRestart = []
+      
+      if (room.players.length > 0) {
+        room.activePlayerId = room.players[0] || ''
+      }
+
+      io.to(roomId).emit('game_restarted', {
+        scores: room.scores,
+        newPokemon,
+        activePlayerId: room.activePlayerId,
+      })
+
+      room.players.forEach(playerId => {
+        if (playerId === room.activePlayerId) {
+          io.to(playerId).emit('game_state', {
+            players: room.players,
+            scores: room.scores,
+            currentPokemon: newPokemon,
+            activePlayerId: room.activePlayerId,
+          })
+        } else {
+          io.to(playerId).emit('game_state', {
+            players: room.players,
+            scores: room.scores,
+            currentPokemon: null,
+            activePlayerId: room.activePlayerId,
+          })
+        }
+      })
+    } else {
+      io.to(roomId).emit('player_ready_to_restart', {
+        playerId: socket.id,
+        readyPlayers: room.readyToRestart
       })
     }
   })
