@@ -15,8 +15,8 @@ function App() {
   }
 
   return (
-    <main className='bg-purple-800 h-[calc(100vh-64px)] flex justify-center items-center mx-auto flex-col'>
-      <h1 className='text-white text-3xl md:text-4xl font-bold mb-4 md:mb-6 font-[Helvetica] tracking-tight'>
+    <main className='bg-purple-800 md:h-[calc(100vh-64px)] flex justify-center items-center mx-auto flex-col mt-4 md:mt-0'>
+      <h1 className='text-white text-3xl md:text-4xl font-bold mb-4 font-[Helvetica] tracking-tight'>
         Who's that Pokémon?
       </h1>
       {pokemon && <PokemonGame initialPokemon={pokemon} />}
