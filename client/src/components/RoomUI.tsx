@@ -16,7 +16,7 @@ export function RoomUI({
   socket,
 }: Props) {
   return (
-    <div className='flex flex-col items-center justify-center h-[calc(100vh-64px)] bg-purple-800 text-white p-4'>
+    <div className='flex flex-col items-center justify-center md:h-[calc(100vh-64px)] bg-purple-800 text-white p-4 mt-4 md:mt-0'>
       <div className='flex items-center gap-4 mb-6'>
         <h1 className='text-2xl font-bold'>Room: {roomCode}</h1>
         <button
