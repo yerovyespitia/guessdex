@@ -127,7 +127,7 @@ export const Card = ({
   }, [])
 
   return (
-    <div className='flex flex-col gap-4 max-w-[330px] md:max-w-full w-full'>
+    <div className='flex flex-col gap-4 max-w-[300px] md:max-w-full w-full'>
       <ScoreBoard
         correct={correctGuesses}
         wrong={wrongGuesses}
