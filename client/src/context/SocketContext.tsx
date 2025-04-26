@@ -29,8 +29,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       forceNew: true,
-      transports: ['websocket'],
-      upgrade: false,
+      transports: ['polling', 'websocket'],
+      upgrade: true,
     })
 
     socketInstance.on('connect', () => {
