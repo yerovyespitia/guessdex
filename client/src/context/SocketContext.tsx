@@ -29,7 +29,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       forceNew: true,
-      transports: ['websocket', 'polling']
+      transports: ['websocket'],
+      upgrade: false,
     })
 
     socketInstance.on('connect', () => {
@@ -40,9 +41,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     socketInstance.on('connect_error', (error) => {
       console.error('Socket connection error details:', error.message, error);
       // Intenta reconectar con diferentes opciones en caso de error
-      if (socketInstance.io.opts.transports.includes('websocket')) {
+      if (socketInstance.io.opts.transports && socketInstance.io.opts.transports.includes('websocket' as any)) {
         console.log('Falling back to polling...');
-        socketInstance.io.opts.transports = ['polling'];
+        socketInstance.io.opts.transports = ['polling' as any];
       }
       setIsConnected(false)
     })
