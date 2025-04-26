@@ -17,7 +17,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     console.log('Initializing socket connection...')
-    const socketInstance = io()
+    // Determine the base URL for socket.io connection
+    // In development we connect to the proxy at the same origin
+    // In production we use the same origin always
+    const socketUrl = window.location.origin
+    console.log('Using socket URL:', socketUrl)
+    
+    const socketInstance = io(socketUrl, {
+      timeout: 20000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      forceNew: true,
+      transports: ['websocket', 'polling']
+    })
 
     socketInstance.on('connect', () => {
       console.log('Socket connected!', socketInstance.id)
@@ -29,8 +42,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setIsConnected(false)
     })
 
-    socketInstance.on('disconnect', () => {
-      console.log('Socket disconnected')
+    socketInstance.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason)
       setIsConnected(false)
     })
 
