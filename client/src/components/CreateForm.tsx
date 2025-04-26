@@ -11,6 +11,7 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
   const { socket, isConnected } = useSocket()
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [connectionAttempts, setConnectionAttempts] = useState(0)
 
   useEffect(() => {
     if (!socket) {
@@ -38,16 +39,31 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
     }
   }, [socket, navigate])
 
+  // Effect to detect connection issues
+  useEffect(() => {
+    if (!isConnected && connectionAttempts > 0) {
+      setError('Connection to server failed. Please refresh the page and try again.')
+    } else if (isConnected) {
+      setError(null)
+    }
+  }, [isConnected, connectionAttempts])
+
   const handleCreateRoom = () => {
-    if (disabled || !socket || !isConnected) {
+    if (disabled || !socket) {
       console.log('Cannot create room:', {
         disabled,
         socketAvailable: !!socket,
-        isConnected,
       })
       setError('Cannot connect to server. Please try again.')
       return
     }
+    
+    if (!isConnected) {
+      setConnectionAttempts(prev => prev + 1)
+      setError('Waiting for connection... Please try again in a moment.')
+      return
+    }
+    
     setError(null)
     setIsCreating(true)
     console.log('Emitting create_room event')
@@ -59,7 +75,7 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
         setIsCreating(false)
         setError('Room creation timed out. Please try again.')
       }
-    }, 10000)
+    }, 5000) // Reduced from 10000 to 5000 ms
   }
 
   return (
@@ -67,7 +83,7 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
       <button
         onClick={handleCreateRoom}
         className='px-6 py-3 w-80 md:w-96 text-lg text-center bg-white rounded-lg text-sky-800 font-semibold outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-        disabled={disabled || !isConnected || isCreating}
+        disabled={disabled || isCreating}
       >
         {isCreating 
           ? 'Creating...' 
@@ -78,6 +94,12 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
       
       {error && (
         <p className="text-red-300 mt-2">{error}</p>
+      )}
+
+      {!isConnected && connectionAttempts > 1 && (
+        <p className="text-white mt-2">
+          Try refreshing the page if the connection doesn't establish.
+        </p>
       )}
     </>
   )
