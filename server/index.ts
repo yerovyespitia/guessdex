@@ -49,6 +49,11 @@ const io = new Server(httpServer, {
   cors: {
     origin: '*',
   },
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  connectTimeout: 30000,
+  maxHttpBufferSize: 5e6, // 5MB
+  transports: ['websocket', 'polling'],
 })
 
 io.on('connection', (socket) => {

@@ -6,28 +6,42 @@ import { rotateTurn, findNextPlayer } from './utils'
 const rooms = new Map<string, GameRoom>()
 
 export function setupSocketEvents(io: Server, socket: Socket) {
+  console.log(`Setting up socket events for client ${socket.id}`)
+
+  // Track and log heartbeats
+  socket.conn.on('heartbeat', () => {
+    console.log(`Heartbeat received from ${socket.id}`)
+  })
+
   socket.on('create_room', async () => {
-    const roomId = Math.random().toString(36).substring(2, 8)
-    const pokemon = (await getPokemon()) as Pokemon
-    const room: GameRoom = {
-      id: roomId,
-      players: [socket.id],
-      currentPokemon: pokemon,
-      scores: { [socket.id]: 0 },
-      activePlayerId: socket.id,
-      guessedPlayers: [],
+    try {
+      console.log(`Client ${socket.id} requested to create a room`)
+      const roomId = Math.random().toString(36).substring(2, 8)
+      const pokemon = (await getPokemon()) as Pokemon
+      const room: GameRoom = {
+        id: roomId,
+        players: [socket.id],
+        currentPokemon: pokemon,
+        scores: { [socket.id]: 0 },
+        activePlayerId: socket.id,
+        guessedPlayers: [],
+      }
+
+      rooms.set(roomId, room)
+      socket.join(roomId)
+
+      console.log(`Room ${roomId} created by ${socket.id}`)
+      socket.emit('room_created', { roomId })
+      socket.emit('game_state', {
+        players: [socket.id],
+        scores: { [socket.id]: 0 },
+        currentPokemon: null,
+        activePlayerId: socket.id,
+      })
+    } catch (error) {
+      console.error('Error creating room:', error)
+      socket.emit('error', 'Failed to create room')
     }
-
-    rooms.set(roomId, room)
-    socket.join(roomId)
-
-    socket.emit('room_created', { roomId })
-    socket.emit('game_state', {
-      players: [socket.id],
-      scores: { [socket.id]: 0 },
-      currentPokemon: null,
-      activePlayerId: socket.id,
-    })
   })
 
   socket.on('join_room', async (roomId: string) => {
@@ -283,6 +297,7 @@ export function setupSocketEvents(io: Server, socket: Socket) {
   })
 
   socket.on('disconnect', () => {
+    console.log(`Client disconnected: ${socket.id}`)
     for (const [roomId, room] of rooms.entries()) {
       if (room.players.includes(socket.id)) {
         room.players = room.players.filter((id) => id !== socket.id)
@@ -293,9 +308,11 @@ export function setupSocketEvents(io: Server, socket: Socket) {
         }
 
         if (room.players.length === 0) {
+          console.log(`Removing empty room ${roomId}`)
           rooms.delete(roomId)
         } else {
           if (room.players.length >= 1 && room.players.length + 1 >= 2) {
+            console.log(`Emitting game_over due to player abandonment in room ${roomId}`)
             io.to(roomId).emit('game_over', {
               winnerId: room.players[0],
               scores: room.scores,

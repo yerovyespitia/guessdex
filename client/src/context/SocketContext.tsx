@@ -17,7 +17,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     console.log('Initializing socket connection...')
-    const socketInstance = io()
+    const socketInstance = io('', {
+      timeout: 20000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      forceNew: true,
+      transports: ['websocket', 'polling']
+    })
 
     socketInstance.on('connect', () => {
       console.log('Socket connected!', socketInstance.id)
@@ -29,8 +36,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setIsConnected(false)
     })
 
-    socketInstance.on('disconnect', () => {
-      console.log('Socket disconnected')
+    socketInstance.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason)
       setIsConnected(false)
     })
 
