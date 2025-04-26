@@ -21,7 +21,6 @@ export function useGameRoom(roomCode: string | null) {
   const [error, setError] = useState<string | null>(null)
   const [gameOver, setGameOver] = useState(false)
   const [winnerId, setWinnerId] = useState<string | null>(null)
-  const [abandonment, setAbandonment] = useState(false)
 
   useEffect(() => {
     if (!socket || !isConnected || !roomCode) return
@@ -79,16 +78,14 @@ export function useGameRoom(roomCode: string | null) {
       game_over: (data: any) => {
         setWinnerId(data.winnerId)
         setGameOver(true)
-        setAbandonment(data.abandonment || false)
       },
       hide_game_over: () => {
         setGameOver(false)
-        setAbandonment(false)
       },
       player_ready_to_restart: (data: any) => {
         // Update readyPlayers in game state
-        setGameState((prev) =>
-          prev
+        setGameState((prev) => 
+          prev 
             ? {
                 ...prev,
                 readyPlayers: data.readyPlayers,
@@ -99,9 +96,8 @@ export function useGameRoom(roomCode: string | null) {
       game_restarted: (data: any) => {
         setGameOver(false)
         setWinnerId(null)
-        setAbandonment(false)
-        setGameState((prev) =>
-          prev
+        setGameState((prev) => 
+          prev 
             ? {
                 ...prev,
                 scores: data.scores,
@@ -112,7 +108,7 @@ export function useGameRoom(roomCode: string | null) {
         )
         if (data.newPokemon)
           queryClient.setQueryData(['pokemon'], data.newPokemon)
-      },
+      }
     }
 
     function updatePlayerState(
@@ -155,7 +151,6 @@ export function useGameRoom(roomCode: string | null) {
     socket,
     gameOver,
     winnerId,
-    restartGame,
-    abandonment,
+    restartGame
   }
 }

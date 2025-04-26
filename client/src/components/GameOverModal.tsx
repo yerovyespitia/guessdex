@@ -6,7 +6,6 @@ type GameOverModalProps = {
   readyPlayers?: string[]
   currentPlayerId: string
   players: string[]
-  abandonment?: boolean
 }
 
 export const GameOverModal = ({
@@ -15,7 +14,6 @@ export const GameOverModal = ({
   readyPlayers = [],
   currentPlayerId,
   players,
-  abandonment = false,
 }: GameOverModalProps) => {
   const navigate = useNavigate()
 
@@ -39,11 +37,9 @@ export const GameOverModal = ({
           {isWinner ? 'You Win!' : 'You Lose!'}
         </h2>
         <p className='mb-8 text-lg text-gray-700 dark:text-gray-300'>
-          {abandonment
-            ? 'The other player abandoned the game.'
-            : isWinner
-              ? 'Congratulations! You reached 10 points first!'
-              : 'Your opponent reached 10 points first.'}
+          {isWinner
+            ? 'Congratulations! You reached 10 points first!'
+            : 'Your opponent reached 10 points first.'}
         </p>
 
         {readyPlayers.length > 0 && (
@@ -55,11 +51,11 @@ export const GameOverModal = ({
             )}
             <div className='flex justify-center gap-2 mt-2'>
               {players.map((playerId) => (
-                <div
-                  key={playerId}
+                <div 
+                  key={playerId} 
                   className={`w-3 h-3 rounded-full ${
-                    readyPlayers.includes(playerId)
-                      ? 'bg-green-500'
+                    readyPlayers.includes(playerId) 
+                      ? 'bg-green-500' 
                       : 'bg-gray-300'
                   }`}
                   title={playerId === currentPlayerId ? 'You' : 'Other player'}
@@ -72,14 +68,14 @@ export const GameOverModal = ({
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
           <button
             onClick={handlePlayAgain}
-            className='bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-full transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+            className='bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-full transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isPlayerReady}
           >
             {isPlayerReady ? 'Waiting...' : 'Play Again'}
           </button>
           <button
             onClick={handleReturnHome}
-            className='bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 px-6 py-3 rounded-full transition-colors text-lg cursor-pointer'
+            className='bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 px-6 py-3 rounded-full transition-colors text-lg'
           >
             Return Home
           </button>

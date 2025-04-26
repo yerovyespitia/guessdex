@@ -26,7 +26,6 @@ function RouteComponent() {
     gameOver,
     winnerId,
     restartGame,
-    abandonment,
   } = useGameRoom(roomCode)
 
   useEffect(() => {
@@ -74,7 +73,6 @@ function RouteComponent() {
       gameOver={gameOver}
       winnerId={winnerId}
       restartGame={restartGame}
-      abandonment={abandonment}
     />
   )
 }

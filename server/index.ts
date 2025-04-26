@@ -12,23 +12,11 @@ const httpServer = createServer((req, res) => {
   const requestedPath = req.url === '/' ? '/index.html' : req.url || ''
   let filePath = join(basePath, requestedPath)
 
-  // Comprobar si la ruta solicitada existe
-  const fileExists = existsSync(filePath) && !statSync(filePath).isDirectory()
-  
-  // Si la ruta no existe, servir index.html para manejar rutas del cliente
-  if (!fileExists && !requestedPath.startsWith('/socket.io/')) {
-    console.log(`Route ${requestedPath} not found, serving index.html for client-side routing`)
-    filePath = join(basePath, 'index.html')
-  }
-
   try {
-    // Si el path es un directorio, buscar index.html dentro
     if (existsSync(filePath) && statSync(filePath).isDirectory()) {
       filePath = join(filePath, 'index.html')
     }
-  } catch (error) {
-    console.error('Error checking file path:', error)
-  }
+  } catch {}
 
   if (existsSync(filePath)) {
     const ext = extname(filePath)
@@ -51,13 +39,7 @@ const httpServer = createServer((req, res) => {
 
     const stream = createReadStream(filePath)
     stream.pipe(res)
-    stream.on('error', (error) => {
-      console.error(`Error streaming file ${filePath}:`, error)
-      res.writeHead(500)
-      res.end('Internal Server Error')
-    })
   } else {
-    console.error(`File not found: ${filePath}`)
     res.writeHead(404)
     res.end('Not found')
   }
@@ -67,11 +49,6 @@ const io = new Server(httpServer, {
   cors: {
     origin: '*',
   },
-  pingTimeout: 60000,
-  pingInterval: 25000,
-  connectTimeout: 30000,
-  maxHttpBufferSize: 5e6, // 5MB
-  transports: ['websocket', 'polling'],
 })
 
 io.on('connection', (socket) => {
