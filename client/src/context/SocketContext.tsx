@@ -38,7 +38,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     socketInstance.on('connect_error', (error) => {
-      console.error('Socket connection error:', error)
+      console.error('Socket connection error details:', error.message, error);
+      // Intenta reconectar con diferentes opciones en caso de error
+      if (socketInstance.io.opts.transports.includes('websocket')) {
+        console.log('Falling back to polling...');
+        socketInstance.io.opts.transports = ['polling'];
+      }
       setIsConnected(false)
     })
 

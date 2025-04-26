@@ -65,13 +65,16 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: "*", // En producción, restringe esto a tus dominios específicos
+    methods: ["GET", "POST"],
+    credentials: true
   },
   pingTimeout: 60000,
   pingInterval: 25000,
   connectTimeout: 30000,
   maxHttpBufferSize: 5e6, // 5MB
   transports: ['websocket', 'polling'],
+  allowEIO3: true // Para compatibilidad con clientes más antiguos si es necesario
 })
 
 io.on('connection', (socket) => {

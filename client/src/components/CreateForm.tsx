@@ -83,7 +83,7 @@ export const CreateForm = ({ disabled }: CreateFormProps) => {
       <button
         onClick={handleCreateRoom}
         className='px-6 py-3 w-80 md:w-96 text-lg text-center bg-white rounded-lg text-sky-800 font-semibold outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-        disabled={disabled || isCreating}
+        disabled={disabled || isCreating || !isConnected}
       >
         {isCreating 
           ? 'Creating...' 
