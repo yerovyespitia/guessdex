@@ -10,6 +10,7 @@ interface Props {
   gameOver: boolean
   winnerId: string | null
   restartGame: () => void
+  abandonment?: boolean
 }
 
 export function RoomUI({
@@ -20,6 +21,7 @@ export function RoomUI({
   gameOver,
   winnerId,
   restartGame,
+  abandonment = false,
 }: Props) {
   return (
     <div className='flex flex-col items-center justify-center sm:h-[calc(100vh-76px)] bg-sky-800 text-white p-4'>
@@ -61,6 +63,7 @@ export function RoomUI({
           readyPlayers={gameState.readyPlayers || []}
           currentPlayerId={currentPlayerId}
           players={gameState.players}
+          abandonment={abandonment}
         />
       )}
     </div>

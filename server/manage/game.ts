@@ -85,6 +85,15 @@ export function setupSocketEvents(io: Server, socket: Socket) {
     if (room.players.length === 0) {
       rooms.delete(roomId)
     } else {
+      if (room.players.length >= 1 && room.players.length + 1 >= 2) {
+        io.to(roomId).emit('game_over', {
+          winnerId: room.players[0],
+          scores: room.scores,
+          abandonment: true,
+          quitterId: socket.id,
+        })
+      }
+
       io.to(roomId).emit('player_left', {
         playerId: socket.id,
         players: room.players,
@@ -171,7 +180,7 @@ export function setupSocketEvents(io: Server, socket: Socket) {
         })
       }
     } else {
-      const currentAttemptedPokemon = room.currentPokemon;
+      const currentAttemptedPokemon = room.currentPokemon
 
       const newPokemon = (await getPokemon()) as Pokemon
       room.currentPokemon = newPokemon
@@ -224,20 +233,20 @@ export function setupSocketEvents(io: Server, socket: Socket) {
 
     socket.emit('hide_game_over')
 
-    const allPlayersReady = room.players.every(playerId => 
+    const allPlayersReady = room.players.every((playerId) =>
       room.readyToRestart?.includes(playerId)
     )
 
     if (allPlayersReady) {
-      room.players.forEach(playerId => {
+      room.players.forEach((playerId) => {
         room.scores[playerId] = 0
       })
-      
+
       const newPokemon = (await getPokemon()) as Pokemon
       room.currentPokemon = newPokemon
       room.guessedPlayers = []
       room.readyToRestart = []
-      
+
       if (room.players.length > 0) {
         room.activePlayerId = room.players[0] || ''
       }
@@ -248,7 +257,7 @@ export function setupSocketEvents(io: Server, socket: Socket) {
         activePlayerId: room.activePlayerId,
       })
 
-      room.players.forEach(playerId => {
+      room.players.forEach((playerId) => {
         if (playerId === room.activePlayerId) {
           io.to(playerId).emit('game_state', {
             players: room.players,
@@ -268,7 +277,7 @@ export function setupSocketEvents(io: Server, socket: Socket) {
     } else {
       io.to(roomId).emit('player_ready_to_restart', {
         playerId: socket.id,
-        readyPlayers: room.readyToRestart
+        readyPlayers: room.readyToRestart,
       })
     }
   })
@@ -286,6 +295,15 @@ export function setupSocketEvents(io: Server, socket: Socket) {
         if (room.players.length === 0) {
           rooms.delete(roomId)
         } else {
+          if (room.players.length >= 1 && room.players.length + 1 >= 2) {
+            io.to(roomId).emit('game_over', {
+              winnerId: room.players[0],
+              scores: room.scores,
+              abandonment: true,
+              quitterId: socket.id,
+            })
+          }
+
           io.to(roomId).emit('player_left', {
             playerId: socket.id,
             players: room.players,
