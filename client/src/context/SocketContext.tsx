@@ -17,21 +17,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     console.log('Initializing socket connection...')
-    // Determine the base URL for socket.io connection
-    // In development we connect to the proxy at the same origin
-    // In production we use the same origin always
-    const socketUrl = window.location.origin
-    console.log('Using socket URL:', socketUrl)
-    
-    const socketInstance = io(socketUrl, {
-      timeout: 20000,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      forceNew: true,
-      transports: ['polling', 'websocket'],
-      upgrade: true,
-    })
+
+    const socketInstance = io()
 
     socketInstance.on('connect', () => {
       console.log('Socket connected!', socketInstance.id)
@@ -39,11 +26,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     socketInstance.on('connect_error', (error) => {
-      console.error('Socket connection error details:', error.message, error);
+      console.error('Socket connection error details:', error.message, error)
       // Intenta reconectar con diferentes opciones en caso de error
-      if (socketInstance.io.opts.transports && socketInstance.io.opts.transports.includes('websocket' as any)) {
-        console.log('Falling back to polling...');
-        socketInstance.io.opts.transports = ['polling' as any];
+      if (
+        socketInstance.io.opts.transports &&
+        socketInstance.io.opts.transports.includes('websocket' as any)
+      ) {
+        console.log('Falling back to polling...')
+        socketInstance.io.opts.transports = ['polling' as any]
       }
       setIsConnected(false)
     })
