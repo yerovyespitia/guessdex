@@ -13,6 +13,7 @@ Guessdex is an interactive web game where players test their Pokémon knowledge 
 ## Tech Stack
 
 ### Frontend
+
 - React 19
 - TypeScript
 - Vite
@@ -21,6 +22,7 @@ Guessdex is an interactive web game where players test their Pokémon knowledge 
 - React Router for navigation
 
 ### Backend
+
 - Bun
 - Socket.io
 
@@ -28,3 +30,23 @@ Guessdex is an interactive web game where players test their Pokémon knowledge 
 
 1. Clone the repository
 2. Install dependencies:
+
+   ```bash
+   # Install root dependencies
+   bun install
+
+   # Install client dependencies
+   cd client
+   bun install
+   ```
+
+3. Start development servers:
+
+   ```bash
+   # Start backend server
+   bun dev
+
+   # In a new terminal, start frontend server
+   cd client
+   bun dev
+   ```
