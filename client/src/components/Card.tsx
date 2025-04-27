@@ -77,9 +77,11 @@ export const Card = ({
             clearInterval(timerRef.current)
           }
           setTimer(15)
-          // Increment wrong guesses when time runs out
-          incrementWrongGuesses()
-          onWrongGuess()
+          // Use setTimeout to avoid calling during render
+          setTimeout(() => {
+            incrementWrongGuesses()
+            onWrongGuess()
+          }, 0)
           return 15
         }
         return prev - 1
@@ -112,6 +114,7 @@ export const Card = ({
         setLocalInputDisabled(false)
         // Don't restart timer here, just resume the current one
         setTimer((prev) => prev)
+        // Call onWrongGuess in the timeout to avoid render issues
         onWrongGuess()
       }, 2000)
     }
@@ -142,12 +145,12 @@ export const Card = ({
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={`Random pokemon artwork`}
-        className={`${isCorrect || keepRevealed ? 'brightness-100 transition-all duration-500' : 'brightness-0'} w-full`}
+        className={`${isCorrect || keepRevealed ? 'brightness-100 transition-all duration-500' : 'brightness-0'} w-full mx-auto`}
         draggable={false}
         onContextMenu={(e) => e.preventDefault()}
       />
 
-      <div className='transition-all duration-800'>
+      <div className='transition-all duration-800 min-h-[32px] flex items-center justify-center'>
         <Feedback
           status={isCorrect ? 'correct' : showWrongIcon ? 'wrong' : null}
           name={showName ? pokemon.name : ''}
