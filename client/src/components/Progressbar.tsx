@@ -1,8 +1,23 @@
 type ProgressbarProps = {
   timer: number
+  maxTimer?: number
+  monochromeTimer?: boolean
 }
 
-export const Progressbar = ({ timer }: ProgressbarProps) => {
+export const Progressbar = ({
+  timer,
+  maxTimer = 15,
+  monochromeTimer = false,
+}: ProgressbarProps) => {
+  const getStrokeColor = () => {
+    if (monochromeTimer) return 'white'
+    if (timer <= 3) return 'red'
+    if (timer <= 10) return 'yellow'
+    return 'white'
+  }
+
+  const strokeColor = getStrokeColor()
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='relative w-12 h-12 mx-auto'>
@@ -21,11 +36,11 @@ export const Progressbar = ({ timer }: ProgressbarProps) => {
             cx='24'
             cy='24'
             r='22'
-            stroke={timer <= 3 ? 'red' : timer <= 10 ? 'yellow' : 'white'}
+            stroke={strokeColor}
             strokeWidth='4'
             fill='transparent'
             strokeDasharray={`${2 * Math.PI * 22}`}
-            strokeDashoffset={`${2 * Math.PI * 22 * (1 - timer / 15)}`}
+            strokeDashoffset={`${2 * Math.PI * 22 * (1 - timer / maxTimer)}`}
             className='transition-all duration-1000 ease-linear'
             strokeLinecap='round'
           />
