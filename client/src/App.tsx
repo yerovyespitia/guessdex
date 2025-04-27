@@ -15,7 +15,7 @@ function App() {
   }
 
   return (
-    <main className='bg-sky-800 sm:h-[calc(100vh-76px)] flex justify-center items-center mx-auto flex-col mt-4 sm:mt-0'>
+    <main className='bg-sky-800 sm:h-[calc(100vh-76px)] flex justify-center items-center mx-auto flex-col mt-1 sm:mt-0'>
       <h1 className='text-white text-3xl sm:text-4xl font-bold mb-4 font-[Helvetica] tracking-tight'>
         Who's that Pokémon?
       </h1>
