@@ -145,7 +145,7 @@ export const Card = ({
       <img
         src={pokemon.sprites.other['official-artwork'].front_default}
         alt={`Random pokemon artwork`}
-        className={`${isCorrect || keepRevealed ? 'brightness-100 transition-all duration-500' : 'brightness-0'} w-full mx-auto`}
+        className={`${isCorrect || keepRevealed ? 'brightness-100 transition-all duration-500' : 'brightness-0'} w-full`}
         draggable={false}
         onContextMenu={(e) => e.preventDefault()}
       />
