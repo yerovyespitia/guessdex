@@ -81,6 +81,7 @@ export const Card = ({
           setTimeout(() => {
             incrementWrongGuesses()
             onWrongGuess()
+            setShowName(true)
           }, 0)
           return 15
         }
