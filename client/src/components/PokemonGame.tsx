@@ -59,9 +59,10 @@ export const PokemonGame = ({
         isMultiplayer={isMultiplayer}
         players={players}
         activePlayerId={activePlayerId}
+        countdown={countdown}
       />
 
-      <Countdown value={countdown} />
+      {!isMultiplayer && <Countdown value={countdown} />}
     </div>
   )
 }

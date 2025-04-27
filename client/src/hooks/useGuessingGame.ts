@@ -24,7 +24,7 @@ export function useGuessingGame({
   const [isMyTurn, setIsMyTurn] = useState(false)
   const { socket } = useSocket()
   const { refetch } = usePokemon()
-  const { countdown, start: startCountdown } = useCountdown(3, fetchNewPokemon)
+  const { countdown, start: startCountdown } = useCountdown(3, submitGuessWithDelay)
 
   useEffect(() => {
     setPokemon(initialPokemon)
@@ -58,10 +58,24 @@ export function useGuessingGame({
     if (data) setPokemon(data)
   }
 
+  // Variables to store the guess result that will be submitted after countdown
+  const [pendingGuessResult, setPendingGuessResult] = useState<string | null>(null)
+  
+  function submitGuessWithDelay() {
+    if (isMultiplayer && onSubmitGuess && pendingGuessResult !== null) {
+      onSubmitGuess(pendingGuessResult)
+      setPendingGuessResult(null)
+      setIsGuessDisabled(true)
+    } else {
+      fetchNewPokemon()
+    }
+  }
+
   function handleCorrectGuess() {
     if (isMultiplayer && onSubmitGuess) {
-      onSubmitGuess(pokemon.name)
+      setPendingGuessResult(pokemon.name)
       setIsGuessDisabled(true)
+      startCountdown()
     } else {
       startCountdown()
     }
@@ -69,8 +83,9 @@ export function useGuessingGame({
 
   function handleWrongGuess() {
     if (isMultiplayer && onSubmitGuess) {
-      onSubmitGuess('')
+      setPendingGuessResult('')
       setIsGuessDisabled(true)
+      startCountdown()
     } else {
       startCountdown()
     }
