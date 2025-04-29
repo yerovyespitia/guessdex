@@ -21,53 +21,48 @@ export const ScoreBoard = ({
   activePlayerId = '',
   timer = 15,
 }: ScoreBoardProps) => {
+  const renderPlayerScore = (player: string, playerNum: number) => (
+    <div
+      key={player}
+      className={`text-xl md:text-2xl font-semibold ${
+        player === currentPlayerId ? 'text-yellow-300' : ''
+      } ${player === activePlayerId ? 'underline' : ''}`}
+    >
+      Player {playerNum} {player === currentPlayerId ? '(You)' : ''}:
+      <span className='font-medium ml-2'>{playerScores[player] || 0}</span>
+    </div>
+  )
+
+  const renderScoreIndicator = (type: 'correct' | 'wrong') => (
+    <div
+      className={`rounded-full px-4 py-1 ${
+        type === 'correct' ? 'bg-green-500' : 'bg-red-500'
+      } flex items-center gap-2`}
+    >
+      <img
+        src={`/svgs/${type === 'correct' ? 'check' : 'wrong'}.svg`}
+        alt={type}
+        className='size-4 filter invert'
+      />
+      <p className='font-bold'>{type === 'correct' ? correct : wrong}</p>
+    </div>
+  )
+
   if (isMultiplayer && players.length > 0) {
     return (
       <div className='flex justify-between gap-12 text-white mb-4'>
-        <div
-          key={players[0]}
-          className={`text-2xl md:text-3xl font-bold ${players[0] === currentPlayerId ? 'text-yellow-300' : ''} ${players[0] === activePlayerId ? 'underline' : ''}`}
-        >
-          Player 1 {players[0] === currentPlayerId ? '(You)' : ''}:
-          <span className='font-medium ml-2'>
-            {playerScores[players[0]] || 0}
-          </span>
-        </div>
-
+        {renderPlayerScore(players[0], 1)}
         <Progressbar timer={timer} />
-
-        <div
-          key={players[1]}
-          className={`text-2xl md:text-3xl font-bold ${players[1] === currentPlayerId ? 'text-yellow-300' : ''} ${players[1] === activePlayerId ? 'underline' : ''}`}
-        >
-          Player 2 {players[1] === currentPlayerId ? '(You)' : ''}:
-          <span className='font-medium ml-2'>
-            {playerScores[players[1]] || 0}
-          </span>
-        </div>
+        {renderPlayerScore(players[1], 2)}
       </div>
     )
   }
 
   return (
     <div className='flex justify-center items-center gap-12 text-white mb-4'>
-      <div className='rounded-full px-4 py-1 bg-green-500 flex items-center gap-2'>
-        <img
-          src='/svgs/check.svg'
-          alt='check'
-          className='size-4 filter invert'
-        />
-        <p className='font-bold'>{correct}</p>
-      </div>
+      {renderScoreIndicator('correct')}
       <Progressbar timer={timer} />
-      <div className='rounded-full px-4 py-1 bg-red-500 flex items-center gap-2'>
-        <img
-          src='/svgs/wrong.svg'
-          alt='wrong'
-          className='size-4 filter invert'
-        />
-        <p className='font-bold'>{wrong}</p>
-      </div>
+      {renderScoreIndicator('wrong')}
     </div>
   )
 }
