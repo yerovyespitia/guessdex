@@ -15,7 +15,8 @@ export const useGuess = (pokemon: Pokemon) => {
   }, [pokemon])
 
   const submitGuess = () => {
-    const isGuessCorrect = guess.toLowerCase() === pokemon.name.toLowerCase()
+    const isGuessCorrect =
+      guess.trim().toLowerCase() === pokemon.name.toLowerCase()
     setIsCorrect(isGuessCorrect)
 
     if (isGuessCorrect) {
