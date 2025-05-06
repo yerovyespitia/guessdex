@@ -65,6 +65,19 @@ export const Card = ({
     }
   }, [pokemon, currentPokemonId, keepRevealed])
 
+  // Add effect to clean up timer when active player changes
+  useEffect(() => {
+    if (isMultiplayer) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+      setTimer(15)
+      if (currentPlayerId === activePlayerId) {
+        startTimer()
+      }
+    }
+  }, [isMultiplayer, currentPlayerId, activePlayerId])
+
   useEffect(() => {
     if (hasInteractedRef.current && !isInputDisabled) inputRef.current?.focus()
   }, [pokemon, isInputDisabled])
@@ -131,7 +144,7 @@ export const Card = ({
   }, [])
 
   return (
-    <div className='flex flex-col gap-4 max-w-[300px] sm:max-w-full w-full'>
+    <div className='flex flex-col gap-4 max-w-[280px] sm:max-w-full w-full'>
       <ScoreBoard
         correct={correctGuesses}
         wrong={wrongGuesses}
