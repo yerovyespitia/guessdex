@@ -47,7 +47,7 @@ export function RoomUI({
   }, [countdown])
 
   return (
-    <div className='flex flex-col items-center justify-center sm:h-[calc(100vh-76px)] bg-sky-800 text-white p-4'>
+    <div className='flex flex-col items-center justify-center h-[calc(100vh-76px)] bg-sky-800 text-white p-4'>
       <div className='flex items-center gap-4 mb-6'>
         {gameState.players.length === 1 && (
           <>
