@@ -4,6 +4,9 @@ import { Feedback } from './Feedback'
 import { GuessForm } from './GuessForm'
 import { useGuess } from '../hooks/useGuess'
 import { useEffect, useRef, useState } from 'react'
+import correctSound from '../assets/sounds/ping.mp3'
+import wrongSound from '../assets/sounds/error.mp3'
+import { useSoundStore } from '../store/sound'
 
 type CardProps = {
   pokemon: Pokemon
@@ -47,6 +50,7 @@ export const Card = ({
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined)
   const hasInteractedRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { isMuted } = useSoundStore()
 
   useEffect(() => {
     if (pokemon.id !== currentPokemonId) {
@@ -117,12 +121,18 @@ export const Card = ({
     if (isGuessCorrect) {
       console.log('Correct guess, showing name for 2 seconds')
       setKeepRevealed(true)
+      if (!isMuted) {
+        new Audio(correctSound).play()
+      }
       setTimeout(() => {
         setShowName(false)
         onCorrectGuess()
       }, 2000)
     } else {
       console.log('Wrong guess, showing feedback for 2 seconds')
+      if (!isMuted) {
+        new Audio(wrongSound).play()
+      }
       setTimeout(() => {
         setShowName(false)
         setLocalInputDisabled(false)
