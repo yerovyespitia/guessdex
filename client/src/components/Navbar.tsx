@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useSoundStore } from '../store/sound'
+
 export const Navbar = () => {
   const { isMuted, toggleMute } = useSoundStore()
 
@@ -7,6 +8,7 @@ export const Navbar = () => {
     { to: '/', title: 'GuessDex', icon: 'home' },
     { to: '/create-room', title: 'Create Room', icon: 'plus' },
     { to: '/join-room', title: 'Join Room', icon: 'door' },
+    { to: '/', title: 'Settings', icon: 'settings' },
   ]
 
   return (
