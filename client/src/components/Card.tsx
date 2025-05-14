@@ -73,10 +73,16 @@ export const Card = ({
   // Add effect to clean up timer when active player changes
   useEffect(() => {
     if (isMultiplayer) {
+      // Ensure timer is completely stopped
       if (timerRef.current) {
         clearInterval(timerRef.current)
+        timerRef.current = undefined
       }
+      
+      // Reset timer to 15
       setTimer(15)
+      
+      // Only start timer if it's the current player's turn
       if (currentPlayerId === activePlayerId) {
         startTimer()
       }
@@ -117,6 +123,7 @@ export const Card = ({
     // Clear the timer on guess
     if (timerRef.current) {
       clearInterval(timerRef.current)
+      timerRef.current = undefined
     }
 
     if (isGuessCorrect) {
@@ -137,8 +144,17 @@ export const Card = ({
       setTimeout(() => {
         setShowName(false)
         setLocalInputDisabled(false)
-        // Don't restart timer here, just resume the current one
-        setTimer((prev) => prev)
+        // For multiplayer, ensure timer is completely stopped
+        if (isMultiplayer) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current)
+            timerRef.current = undefined
+          }
+          setTimer(15)
+        } else {
+          // Don't restart timer here, just resume the current one
+          setTimer((prev) => prev)
+        }
         // Call onWrongGuess in the timeout to avoid render issues
         onWrongGuess()
       }, 2000)
