@@ -11,12 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SettingsImport } from './routes/settings'
 import { Route as JoinRoomImport } from './routes/join-room'
 import { Route as CreateRoomImport } from './routes/create-room'
 import { Route as IndexImport } from './routes/index'
 import { Route as RoomRoomIdImport } from './routes/room/$roomId'
 
 // Create/Update Routes
+
+const SettingsRoute = SettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const JoinRoomRoute = JoinRoomImport.update({
   id: '/join-room',
@@ -67,6 +74,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JoinRoomImport
       parentRoute: typeof rootRoute
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsImport
+      parentRoute: typeof rootRoute
+    }
     '/room/$roomId': {
       id: '/room/$roomId'
       path: '/room/$roomId'
@@ -83,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-room': typeof CreateRoomRoute
   '/join-room': typeof JoinRoomRoute
+  '/settings': typeof SettingsRoute
   '/room/$roomId': typeof RoomRoomIdRoute
 }
 
@@ -90,6 +105,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-room': typeof CreateRoomRoute
   '/join-room': typeof JoinRoomRoute
+  '/settings': typeof SettingsRoute
   '/room/$roomId': typeof RoomRoomIdRoute
 }
 
@@ -98,15 +114,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/create-room': typeof CreateRoomRoute
   '/join-room': typeof JoinRoomRoute
+  '/settings': typeof SettingsRoute
   '/room/$roomId': typeof RoomRoomIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-room' | '/join-room' | '/room/$roomId'
+  fullPaths: '/' | '/create-room' | '/join-room' | '/settings' | '/room/$roomId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-room' | '/join-room' | '/room/$roomId'
-  id: '__root__' | '/' | '/create-room' | '/join-room' | '/room/$roomId'
+  to: '/' | '/create-room' | '/join-room' | '/settings' | '/room/$roomId'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-room'
+    | '/join-room'
+    | '/settings'
+    | '/room/$roomId'
   fileRoutesById: FileRoutesById
 }
 
@@ -114,6 +137,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoomRoute: typeof CreateRoomRoute
   JoinRoomRoute: typeof JoinRoomRoute
+  SettingsRoute: typeof SettingsRoute
   RoomRoomIdRoute: typeof RoomRoomIdRoute
 }
 
@@ -121,6 +145,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoomRoute: CreateRoomRoute,
   JoinRoomRoute: JoinRoomRoute,
+  SettingsRoute: SettingsRoute,
   RoomRoomIdRoute: RoomRoomIdRoute,
 }
 
@@ -137,6 +162,7 @@ export const routeTree = rootRoute
         "/",
         "/create-room",
         "/join-room",
+        "/settings",
         "/room/$roomId"
       ]
     },
@@ -148,6 +174,9 @@ export const routeTree = rootRoute
     },
     "/join-room": {
       "filePath": "join-room.tsx"
+    },
+    "/settings": {
+      "filePath": "settings.tsx"
     },
     "/room/$roomId": {
       "filePath": "room/$roomId.tsx"
